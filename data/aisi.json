@@ -31974,7 +31974,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "Developed and performed an alignment evaluation.",
+          "text": "Developed and performed an alignment evaluation that assesses whether advanced AI systems take unsanctioned actions outside the scope of their assigned task.",
           "source_ids": [
             "depth-gb-supply-chain"
           ]
@@ -31987,16 +31987,6 @@
           "text": "Presented results from its evaluations of five large language models.",
           "source_ids": [
             "fix-output-gb-advanced-evaluations-may-2024"
-          ]
-        },
-        {
-          "id": "claims-b06e9acd312c42c6afef1a36818b9f50",
-          "kind": "function",
-          "code": "regulatory_support",
-          "basis": "mandate",
-          "text": "Its research is to provide technical tools for governance and regulation.",
-          "source_ids": [
-            "gb-cp960-2023"
           ]
         },
         {
@@ -32509,11 +32499,11 @@
       },
       "claims": [
         {
-          "id": "claims-32e010da038b46058d94d1fb8559e8ac",
+          "id": "claims-6d8d07bf504546f58c99af50c830d313",
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "Tested an alternate judge-LLM prompt as a proof of concept with a complete benchmark run on a self-hosted model.",
+          "text": "Ran a variation of the network's joint agentic test on a different model from the main exercise.",
           "source_ids": [
             "catalogue-agentic-report"
           ]
@@ -32536,6 +32526,16 @@
           "text": "Published 'What should evaluators prioritise when resources are limited?'",
           "source_ids": [
             "r3-gb-network-best-practice-release"
+          ]
+        },
+        {
+          "id": "claims-32e010da038b46058d94d1fb8559e8ac",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "text": "Designed an alternate judge-LLM prompt for the network's joint agentic testing.",
+          "source_ids": [
+            "catalogue-agentic-report"
           ]
         },
         {
@@ -32607,26 +32607,6 @@
           "source_ids": [
             "network-multilingual-2025",
             "fix-output-fr-inesia-evaluation-prioritisation-guidance"
-          ]
-        },
-        {
-          "id": "claims-4d1cc3be51da4f70b2bb35acd0b24750",
-          "kind": "function",
-          "code": "regulatory_support",
-          "basis": "activity",
-          "text": "Inria's annual report says INESIA's work focuses on, among other things, supporting the implementation of AI regulation.",
-          "source_ids": [
-            "fr-inria-annual-2024"
-          ]
-        },
-        {
-          "id": "claims-380f9000d06f479e8bdb21ced2069f99",
-          "kind": "function",
-          "code": "research",
-          "basis": "activity",
-          "text": "Inria's annual report says INESIA's work focuses on, among other things, analysing systemic risks in the field of national security.",
-          "source_ids": [
-            "fr-inria-annual-2024"
           ]
         }
       ]
@@ -34700,16 +34680,6 @@
           "text": "The Commission has started using its enforcement powers under the AI Act, with requests for information sent to several companies to check compliance with their obligations.",
           "source_ids": [
             "eu-midday-briefing-2026-09-11"
-          ]
-        },
-        {
-          "id": "claims-0f0da73dd52c4c79a3925f891e0bef16",
-          "kind": "function",
-          "code": "risk_monitoring",
-          "basis": "activity",
-          "text": "The Commission says the AI Office monitors model capabilities.",
-          "source_ids": [
-            "eu-pq-p001672-2026"
           ]
         },
         {
@@ -39857,16 +39827,6 @@
           "text": "Its initial AI safety research areas include safe model design, development and deployment, and content assurance.",
           "source_ids": [
             "sg-imda"
-          ]
-        },
-        {
-          "id": "claims-b5e257f0ae2c493795921b43bba939cf",
-          "kind": "function",
-          "code": "research",
-          "basis": "activity",
-          "text": "It says its work examines issues such as emotional dependency and cognitive offloading.",
-          "source_ids": [
-            "sg-site"
           ]
         },
         {
@@ -48276,23 +48236,6 @@
             ]
           ],
           "accessed": "2026-10-21"
-        },
-        {
-          "text": "Our work examines issues such as emotional dependency and cognitive offloading, ensuring that AI deployment aligns with public interest and long-term societal well-being.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-b5e257f0ae2c493795921b43bba939cf"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-17"
         },
         {
           "text": "This is done through the workshops and red teaming challenges that we have conducted for knowledge sharing and capacity building in technical testing capabilities.",
@@ -72893,17 +72836,6 @@
               },
               "testing_capacity",
               "notes"
-            ],
-            [
-              "institutes",
-              {
-                "id": "gb-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-99fa6752b3ca4c97b86babc76a35de87"
-              },
-              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -72937,6 +72869,23 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "This technical report presents an alignment evaluation developed and performed by the UK AI Security Institute for assessing whether advanced AI systems take unsanctioned actions outside the scope of their assigned task.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-99fa6752b3ca4c97b86babc76a35de87"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17"
         }
       ],
       "origin": "GB",
@@ -73250,34 +73199,6 @@
               "claims",
               {
                 "id": "claims-0eaa377082c64ceb8750deb5c3b4a738"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "INESIA’s work focuses on analysing \nsystemic risks in the field of national security, \nsupporting the implementation of AI regulation, \nand assessing the performance and reliability of AI \nmodels.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "fr-inesia"
-              },
-              "claims",
-              {
-                "id": "claims-4d1cc3be51da4f70b2bb35acd0b24750"
-              },
-              "text"
-            ],
-            [
-              "institutes",
-              {
-                "id": "fr-inesia"
-              },
-              "claims",
-              {
-                "id": "claims-380f9000d06f479e8bdb21ced2069f99"
               },
               "text"
             ]
@@ -78942,30 +78863,23 @@
               },
               "model_access",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "claims",
+              {
+                "id": "claims-6d8d07bf504546f58c99af50c830d313"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-21"
         },
         {
           "text": "France AISI therefore designed an alternate judge-LLM prompt taking this observation into account.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "fr-inesia"
-              },
-              "testing_capacity",
-              "modes",
-              {
-                "code": "in_house"
-              },
-              "code"
-            ]
-          ],
-          "accessed": "2026-10-21"
-        },
-        {
-          "text": "The alternate judge-LLM prompt was tested as a proof-of-concept with a complete benchmark run on a self-hosted model.",
           "supports": [
             [
               "institutes",
@@ -78989,6 +78903,24 @@
                 "id": "claims-32e010da038b46058d94d1fb8559e8ac"
               },
               "text"
+            ]
+          ],
+          "accessed": "2026-10-21"
+        },
+        {
+          "text": "The alternate judge-LLM prompt was tested as a proof-of-concept with a complete benchmark run on a self-hosted model.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "testing_capacity",
+              "modes",
+              {
+                "code": "in_house"
+              },
+              "code"
             ]
           ],
           "accessed": "2026-10-21",
@@ -112049,24 +111981,6 @@
             ]
           ],
           "accessed": "2026-10-21"
-        },
-        {
-          "text": "The AI Office also monitors model capabilities.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "claims",
-              {
-                "id": "claims-0f0da73dd52c4c79a3925f891e0bef16"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-21",
-          "url": "https://r.jina.ai/https://www.europarl.europa.eu/doceo/document/P-10-2026-001672-ASW_EN.html"
         }
       ],
       "snapshot": {
@@ -127853,23 +127767,6 @@
                 "id": "gb-2"
               },
               "description"
-            ]
-          ],
-          "accessed": "2026-11-14"
-        },
-        {
-          "text": "The research of the AI Safety Institute will inform UK and international policymaking and provide technical tools for governance and regulation.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "gb-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-b06e9acd312c42c6afef1a36818b9f50"
-              },
-              "text"
             ]
           ],
           "accessed": "2026-11-14"
