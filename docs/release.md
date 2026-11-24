@@ -6,7 +6,7 @@ A release checks what changed since the last release tag. The whole dataset is a
 
 ## Versions during development
 
-A change to `data/aisi.json` is released with a version: patch for corrections, minor for new records, status changes or additive schema fields, major for breaking schema changes. Adding a code to `dataset.vocabularies` is minor; removing or renaming one is major, except fields and vocabularies listed in `dataset.provisional`, which may change in a minor with a changelog line.
+A change to `data/aisi.json` is released with a version: patch for corrections, minor for new records, status changes or additive schema fields, major for breaking schema changes. Adding a code to `dataset.vocabularies` is minor; removing or renaming one is major, except fields and vocabularies listed in `dataset.provisional`, which may change in a minor with a changelog line. Parts listed in `dataset.provisional` may also gain fields in a patch release.
 
 A page, code or documentation fix that must go live is a patch release through all the steps below. Deployments without a version are retired.
 
