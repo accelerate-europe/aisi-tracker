@@ -34588,6 +34588,16 @@
           ]
         },
         {
+          "id": "claims-0d80aec6de694ed39df817d81ed3777c",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "activity",
+          "text": "Developed a draft template, put out for feedback, that sets out questions to guide deployers through the fundamental rights impact assessment.",
+          "source_ids": [
+            "eu-fria-news-2026"
+          ]
+        },
+        {
           "id": "claims-5ad34bd4030d47c0851583a0a40a9879",
           "kind": "function",
           "code": "model_testing",
@@ -36899,6 +36909,16 @@
           ]
         },
         {
+          "id": "claims-245b002026c242a8ab07de33f41e19a9",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "It says it tested two models on a translated subset of the original datasets in the network's joint multilingual testing exercise.",
+          "source_ids": [
+            "network-multilingual-2025"
+          ]
+        },
+        {
           "id": "claims-d286d5a1123d4fb4abdc1ed5e1cdf157",
           "kind": "function",
           "code": "risk_monitoring",
@@ -36959,9 +36979,29 @@
           ]
         },
         {
+          "id": "claims-70e39d9878c14aee94c21a6858ee9afa",
+          "kind": "function",
+          "code": "research",
+          "basis": "activity",
+          "text": "Has initiated 13 AI safety projects, including work exploring the risks of autonomous AI agents.",
+          "source_ids": [
+            "ca-qp-caisi-2025"
+          ]
+        },
+        {
           "id": "claims-0424f35f5f8047f3bc784ca59f9b9eea",
           "kind": "fact",
           "text": "Its page on the ISED site says it provides guidance to AI developers and users and to the public on the risks of advanced AI systems and how to address them.",
+          "source_ids": [
+            "ca-ised"
+          ]
+        },
+        {
+          "id": "claims-8aafc1ce590645289e2f7063a5930005",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "activity",
+          "text": "It says it provides guidance to AI developers and users on the risks of advanced AI systems and how to address them.",
           "source_ids": [
             "ca-ised"
           ]
@@ -50014,6 +50054,17 @@
               "claims",
               {
                 "id": "claims-0424f35f5f8047f3bc784ca59f9b9eea"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-8aafc1ce590645289e2f7063a5930005"
               },
               "text"
             ]
@@ -63377,6 +63428,29 @@
             ]
           ],
           "accessed": "2026-10-21"
+        },
+        {
+          "text": "Our evaluation involved testing the two models using a translated subset of the original datasets.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-245b002026c242a8ab07de33f41e19a9"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "Contributed by Canada AISI",
+              "kind": "heading"
+            }
+          ]
         }
       ],
       "origin": "International Network of AI Safety Institutes",
@@ -64998,6 +65072,17 @@
               "claims",
               {
                 "id": "claims-5725067e50384146bf7e45737230a3f5"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-70e39d9878c14aee94c21a6858ee9afa"
               },
               "text"
             ]
@@ -129643,6 +129728,23 @@
                 "lineage": "fria-template-article-27"
               },
               "attribution_note"
+            ]
+          ],
+          "accessed": "2026-11-23"
+        },
+        {
+          "text": "This draft template has been developed by the AI Office pursuant to Article 27(5) AI Act with input from the EU Agency for Fundamental Rights (FRA). It follows the structure of Article 27(1) and sets out questions to guide deployers through the assessment to simplify compliance.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-0d80aec6de694ed39df817d81ed3777c"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-11-23"
