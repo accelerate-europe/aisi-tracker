@@ -36137,7 +36137,7 @@
           "kind": "function",
           "code": "research",
           "basis": "activity",
-          "text": "Has found, with other evaluators, the risk that AI agents use their tools to cheat.",
+          "text": "Has found, as have other evaluators, the risk that AI agents can use their tools to cheat.",
           "source_ids": [
             "us-blog-cheating-2025"
           ]
@@ -36913,7 +36913,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "activity",
-          "text": "It says it tested two models on a translated subset of the original datasets in the network's joint multilingual testing exercise.",
+          "text": "Tested two models on a translated subset of the original datasets in the network's joint multilingual testing exercise.",
           "source_ids": [
             "network-multilingual-2025"
           ]
@@ -36992,16 +36992,6 @@
           "id": "claims-0424f35f5f8047f3bc784ca59f9b9eea",
           "kind": "fact",
           "text": "Its page on the ISED site says it provides guidance to AI developers and users and to the public on the risks of advanced AI systems and how to address them.",
-          "source_ids": [
-            "ca-ised"
-          ]
-        },
-        {
-          "id": "claims-8aafc1ce590645289e2f7063a5930005",
-          "kind": "function",
-          "code": "standards_guidance",
-          "basis": "activity",
-          "text": "It says it provides guidance to AI developers and users on the risks of advanced AI systems and how to address them.",
           "source_ids": [
             "ca-ised"
           ]
@@ -50054,17 +50044,6 @@
               "claims",
               {
                 "id": "claims-0424f35f5f8047f3bc784ca59f9b9eea"
-              },
-              "text"
-            ],
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "claims",
-              {
-                "id": "claims-8aafc1ce590645289e2f7063a5930005"
               },
               "text"
             ]
