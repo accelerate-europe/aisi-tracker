@@ -5,7 +5,8 @@
   "20261116T040027Z-60544e",
   "20261116T150307Z-ea83f6",
   "20261123T040008Z-c8b1b5",
-  "20261124T160618Z-57a29c"
+  "20261124T160618Z-57a29c",
+  "20261124T162557Z-bb2774"
  ],
  "sources": {
   "gb-rename": {
@@ -73,93 +74,99 @@
   "gb-about": {
    "sha256:069a102d056820f93251d57a5defb64d2311f180f409321b6b6f51114017a681": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    },
    "sha256:10f2f8a0088f6a51c08c40ab178c0b2ec926311ed1a09e3eb352f9633a0f4f15": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
-   },
-   "sha256:15c4a761b4b305a9f7020f289383b69fd52e100fe3497344948b7d8fb481ee97": {
-    "state": "quote_gone",
-    "last_found": "2026-11-16",
-    "since": "2026-11-23",
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    },
    "sha256:3110ce92fdaac291ad16e0d7fca2a5dae256f79b46d459dcc88152935f59753c": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    },
    "sha256:5759a9ca75d467d869ba1a4f07454dcc2e7375ebd2d033f09880e22aad952e4f": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    },
    "sha256:6405044edc68bd70377a6f63bf62d0c5ad78696c36d013cc089ae2e0da82d18d": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    },
-   "sha256:9d215cbedeacd258ddb444c8aa53f2049a7ef7049237c0a56c5c22a7b86c2b56": {
-    "state": "quote_gone",
-    "last_found": "2026-11-16",
-    "since": "2026-11-23",
-    "last_attempt": "2026-11-23"
+   "sha256:7bb73745ab57c97c530de5fc287f04e63995f460b671eaa053a24c0a37d01332": {
+    "state": "confirmed",
+    "last_found": "2026-11-24",
+    "since": null,
+    "last_attempt": "2026-11-24"
+   },
+   "sha256:a52aebc2c73afd0af2e7afe962cb3e9b3d4a55bf06e9754af00dd6ca2517165e": {
+    "state": "confirmed",
+    "last_found": "2026-11-24",
+    "since": null,
+    "last_attempt": "2026-11-24"
    },
    "sha256:b911da9019c89465518321d82504e1fe2a120bc71f02de5f05ca66a421dd53d2": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    },
    "sha256:ba083672a8bf9a54323112e35fbf2a82735ab71c45a1050718531ac903dc6727": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    },
-   "sha256:c0b5cfd8da81a4552ac5d4c66332af807284011800c0d1c0cbe9207dbbf217a3": {
-    "state": "quote_gone",
-    "last_found": "2026-10-17",
-    "since": "2026-11-23",
-    "last_attempt": "2026-11-23"
+   "sha256:bd87e420a09b3cfcc5d77381249f227e07cc9d658927bf20878c61f9d61466b4": {
+    "state": "confirmed",
+    "last_found": "2026-11-24",
+    "since": null,
+    "last_attempt": "2026-11-24"
    },
    "sha256:c7042446da44a13d1a67049f9955b941c714adfbd36c6b580a80c974ceddd0cc": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    },
    "sha256:cdfa613ad8468444562937bd2f6623cc2ff0bce476f678e8e11d26d73e012bf8": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    },
-   "sha256:d306067fceb79478f7b5ec1e1bf8960b095c6165dab255a603d0920ec212375a": {
-    "state": "quote_gone",
-    "last_found": "2026-11-16",
-    "since": "2026-11-23",
-    "last_attempt": "2026-11-23"
+   "sha256:dcfb9e148c9cae57b5f3e3d1310e2f61e0a5f34d5b229eca261e94f0e5061ab1": {
+    "state": "confirmed",
+    "last_found": "2026-11-24",
+    "since": null,
+    "last_attempt": "2026-11-24"
    },
    "sha256:f53e8aa2091ab17c92ce931185175bb0df90d5d2339a7ffeac328a76909b8d10": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
+   },
+   "sha256:f62fcceeb76195a2b637cbc7d4b11be0ae566a192fad572fc8d16f49041fd321": {
+    "state": "confirmed",
+    "last_found": "2026-11-24",
+    "since": null,
+    "last_attempt": "2026-11-24"
    },
    "sha256:f949ec25aa67fd0134672071c260d12f02ab2c39bba195b233e1e2df8272fd35": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    }
   },
   "gb-jobad": {

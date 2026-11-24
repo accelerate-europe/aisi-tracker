@@ -29858,7 +29858,7 @@
           "confidence": "high",
           "title_status": "published",
           "id": "people-540493becb4c5a4dbd2bdb9cf61476fe",
-          "notes": "Chief Technology Officer until the end of September 2026, as the Cabinet Office notice of 23 September 2026 states; the institute’s About page still lists that title."
+          "notes": "Chief Technology Officer until the end of September 2026, as the Cabinet Office notice of 23 September 2026 states. Also Security Adviser to the AI Taskforce; formerly the Prime Minister's AI Adviser."
         },
         {
           "name": "Nate Burnikell",
@@ -29869,6 +29869,16 @@
           "confidence": "high",
           "title_status": "published",
           "id": "people-4a2d171617065be09ebccb2dfe369a8c"
+        },
+        {
+          "name": "Pawan Mudigonda",
+          "role": "Research Director",
+          "source_ids": [
+            "gb-about"
+          ],
+          "confidence": "high",
+          "title_status": "published",
+          "id": "people-c3ad711b9ec148e59500d70fb5eaf762"
         }
       ],
       "mandate_short": "Tests frontier AI models for security and safety risks.",
@@ -42199,7 +42209,7 @@
           "accessed": "2026-10-17"
         },
         {
-          "text": "Our Director Henry de Zoete OBE was formerly the Prime Minister’s AI Advisor and a UK Government Investment and AI Adviser",
+          "text": "Our Director Henry de Zoete OBE was formerly the Prime Minister’s AI Adviser and a UK Government Investment and AI Adviser",
           "supports": [
             [
               "institutes",
@@ -42213,7 +42223,7 @@
               "role"
             ]
           ],
-          "accessed": "2026-10-17"
+          "accessed": "2026-11-24"
         },
         {
           "text": "Our Research Director Chris Summerfield leads the Human Information Processing Lab at the University of Oxford.",
@@ -42309,7 +42319,7 @@
           "accessed": "2026-10-19"
         },
         {
-          "text": "Our Director Henry de Zoete OBE was formerly the Prime Minister’s AI Advisor",
+          "text": "Our Director Henry de Zoete OBE was formerly the Prime Minister’s AI Adviser",
           "supports": [
             [
               "institutes",
@@ -42320,7 +42330,7 @@
               "person_id"
             ]
           ],
-          "accessed": "2026-10-19"
+          "accessed": "2026-11-24"
         },
         {
           "text": "Our Director Henry de Zoete OBE",
@@ -42359,7 +42369,7 @@
           "accessed": "2026-10-20"
         },
         {
-          "text": "Chief Technology Officer Jade Leung",
+          "text": "Our Vice-Chair Jade Leung",
           "supports": [
             [
               "institutes",
@@ -42373,7 +42383,7 @@
               "name"
             ]
           ],
-          "accessed": "2026-10-17"
+          "accessed": "2026-11-24"
         },
         {
           "text": "So, we also research solutions across risk domains, and we are mobilizing >£15 million in grants to accelerate breakthroughs globally.",
@@ -42410,7 +42420,7 @@
           "accessed": "2026-10-17"
         },
         {
-          "text": "Our Chief Technology Officer Jade Leung is also the Prime Minister's AI Advisor, and she previously led the Governance team at OpenAI.",
+          "text": "Our Vice-Chair Jade Leung also acts as a Security Adviser to the AI Taskforce. She was previously the Prime Minister's AI Adviser, and also led the Governance team at OpenAI.",
           "supports": [
             [
               "institutes",
@@ -42424,14 +42434,42 @@
               "notes"
             ]
           ],
-          "accessed": "2026-10-17"
+          "accessed": "2026-11-24"
+        },
+        {
+          "text": "Our Research Director Pawan Mudigonda",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "people",
+              {
+                "id": "people-c3ad711b9ec148e59500d70fb5eaf762"
+              },
+              "name"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "people",
+              {
+                "id": "people-c3ad711b9ec148e59500d70fb5eaf762"
+              },
+              "role"
+            ]
+          ],
+          "accessed": "2026-11-24"
         }
       ],
       "origin": "GB",
       "snapshot": {
-        "retrieved": "2026-10-17T14:07:21Z",
-        "sha256": "d2dabf9d5d36aba5fc7fb5aa1191ff3a7a529209d13f7feda30ba47d3da1d845",
-        "text_sha256": "4b5402779a0da30a97acfc549ba464a4b483305ccf9a510befd722e74ee473d7",
+        "retrieved": "2026-11-24T16:23:39Z",
+        "sha256": "b4e4b4a362f818a0e51dc472da71dacad493aeba1e47c9e5bd4afec68044fe66",
+        "text_sha256": "69c1741df6eab6ff9af61e94773cc5df22832c54394890df47e01827b9d2990f",
         "text_scheme": 1
       },
       "access_note": "The retained 17 October 2026 copy describes AISI as part of DSIT. Current placement follows the GOV.UK organisation page checked on 19 October 2026. The research and testing excerpts were rechecked against the retained copy on 19 October; they do not establish current placement."
