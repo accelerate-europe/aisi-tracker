@@ -31833,6 +31833,16 @@
           ]
         },
         {
+          "id": "claims-517388a879514066a463175799109c07",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "It says that, with the US institute, it conducted a joint pre-deployment evaluation of Anthropic's latest model.",
+          "source_ids": [
+            "r3-gb-claude35-release"
+          ]
+        },
+        {
           "id": "claims-9b738056fb284533b4951aec055d0399",
           "kind": "function",
           "code": "adoption",
@@ -36013,6 +36023,16 @@
           ]
         },
         {
+          "id": "claims-c4e73b5e404a41c1a5fe219c7b739510",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "NIST's report says it conducted a joint pre-deployment evaluation of Anthropic's latest model with the UK institute.",
+          "source_ids": [
+            "us-claude35-2024"
+          ]
+        },
+        {
           "id": "claims-ae9202af0518471fa52b995a5da33743",
           "kind": "function",
           "code": "evaluation_methods",
@@ -36060,6 +36080,16 @@
           "text": "NIST's announcement says it and the UK AI Security Institute ran a joint evaluation of Moonshot AI's Kimi K3.",
           "source_ids": [
             "depth-us-kimi"
+          ]
+        },
+        {
+          "id": "claims-93f2a3baf2274e47ab6eaaf00d9d84b8",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "NIST's report says it conducted a joint pre-deployment evaluation of Anthropic's latest model with the UK institute.",
+          "source_ids": [
+            "us-claude35-2024"
           ]
         },
         {
@@ -39606,6 +39636,16 @@
           "text": "It says that, with the Korean institute, it concluded a bilateral test of whether AI agents leak sensitive data in common tasks.",
           "source_ids": [
             "fix-output-sg-kr-january"
+          ]
+        },
+        {
+          "id": "claims-f44a8bd7a2994c278721079abc19f54d",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "It says that it tested Llama-3.1 405B with the US and UK institutes.",
+          "source_ids": [
+            "sg-pilot-2024"
           ]
         },
         {
@@ -64209,6 +64249,28 @@
                 "id": "claims-3e1cd8160012411a89b7e5c3a89d9f4d"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-c4e73b5e404a41c1a5fe219c7b739510"
+              },
+              "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-93f2a3baf2274e47ab6eaaf00d9d84b8"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
@@ -66281,9 +66343,26 @@
               },
               "model_access",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "sg-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-f44a8bd7a2994c278721079abc19f54d"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-10-17"
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "Singapore AI Safety Institute (SG AISI)",
+              "kind": "definition"
+            }
+          ]
         },
         {
           "text": "For this proof of concept, the Network used an open foundation model, Llama-3.1 405B.",
@@ -94869,6 +94948,17 @@
               },
               "credit",
               "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-517388a879514066a463175799109c07"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17"
