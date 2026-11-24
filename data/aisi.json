@@ -2644,6 +2644,10 @@
           {
             "date": "2026-11-02",
             "scope": "Read the government's answer 21/8727 of 19 October 2026 on staffing, funds, testing, model access, parliamentary scrutiny and further build-up; added its source and excerpts. No confirmation of network membership or phase 2 completion found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-24",
+            "scope": "Re-read of the French presidency's Paris Call for AI Safety and Security page. Left for review: Germany's place on its endorsement list, published on 9 November and since updated. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -2681,7 +2685,8 @@
         "de-ki-mig-2026",
         "de-bnetza-notifying-authorities",
         "eu-ai-act-authorities-2026",
-        "de-bt-8727-2026"
+        "de-bt-8727-2026",
+        "fr-elysee-paris-call-2026"
       ],
       "region": {
         "id": "150",
@@ -2981,6 +2986,10 @@
           {
             "date": "2026-11-02",
             "scope": "Searched BOE and AESIA for a constitutive act or institute appointment. BOE-A-2026-22898, published 2 November 2026, appoints an AESIA deputy director-general, not an institute head. No constitutive act found; no factual record change. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-24",
+            "scope": "Re-read of the French presidency's Paris Call for AI Safety and Security page. Left for review: Spain's place on its endorsement list, published on 9 November and since updated. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -3005,7 +3014,8 @@
         "es-plan",
         "es-moncloa",
         "es-cabinet-ai-governance-bill-2026",
-        "eu-ai-act-authorities-2026"
+        "eu-ai-act-authorities-2026",
+        "fr-elysee-paris-call-2026"
       ],
       "region": {
         "id": "150",
@@ -5111,6 +5121,10 @@
           {
             "date": "2026-11-10",
             "scope": "News search from 17 October 2026 in English and Danish, with the digitalisation ministry's news page (newest 22 October). Left for review: the first reading and referral to committee on 5 November of the Folketing bill L3 on supplementary provisions to the AI Act, which would set up national supervision and enforcement. The bill is pending, with further readings scheduled for December. No new institute, developer access or Network joining was found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-24",
+            "scope": "Re-read of the French presidency's Paris Call for AI Safety and Security page. Left for review: Denmark's place on its endorsement list, published on 9 November and since updated. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -5146,7 +5160,8 @@
       "source_ids": [
         "dk-ai-law467-2025",
         "dk-digst-ai-authorities-faq",
-        "ai-act-tracker"
+        "ai-act-tracker",
+        "fr-elysee-paris-call-2026"
       ],
       "region": {
         "id": "150",
@@ -29554,7 +29569,7 @@
           "id": "staff-b1bb61c8c7415a6b838a1ce0dbe89db3"
         }
       ],
-      "staffing_profile": "The institute hires from industry, academic and nonprofit labs, with pay allowances to compete with labs (technical roles about £65k-£145k plus an employer pension contribution of about 29% of base salary).",
+      "staffing_profile": "Technical staff bring experience from industry, academic and nonprofit labs; technical roles pay about £65k-£145k, a base salary plus a technical allowance.",
       "check": {
         "last_checked": "2026-10-16",
         "method": "individual",
@@ -42463,6 +42478,19 @@
             ]
           ],
           "accessed": "2026-11-24"
+        },
+        {
+          "text": "Our 100+ technical staff bring experience from leading industry, academic and nonprofit labs.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "staffing_profile"
+            ]
+          ],
+          "accessed": "2026-11-24"
         }
       ],
       "origin": "GB",
@@ -42493,19 +42521,6 @@
       "excerpts": [
         {
           "text": "Most offers land between £65,000 and £145,000 made up of a base salary plus a technical allowance",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "gb-aisi"
-              },
-              "staffing_profile"
-            ]
-          ],
-          "accessed": "2026-11-19"
-        },
-        {
-          "text": "An additional 28.97% employer pension contribution is paid on the base salary.",
           "supports": [
             [
               "institutes",
@@ -48598,6 +48613,18 @@
                 "id": "np-ca-cifar"
               },
               "how"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "national_partners",
+              "entries",
+              {
+                "id": "np-ca-cifar"
+              },
+              "what"
             ]
           ],
           "accessed": "2026-10-19"
@@ -49956,24 +49983,6 @@
             ]
           ],
           "accessed": "2026-10-19"
-        },
-        {
-          "text": "The Canadian Institute for Advanced Research (CIFAR) is a globally influential research organization proudly based in Canada.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "national_partners",
-              "entries",
-              {
-                "id": "np-ca-cifar"
-              },
-              "what"
-            ]
-          ],
-          "accessed": "2026-10-20"
         }
       ]
     },
@@ -125785,7 +125794,7 @@
       "origin": "FR",
       "excerpts": [
         {
-          "text": "Heads of States and Governments: Austria, Bahrain, Canada, Croatia, Cyprus, Estonia, Finland, France, Germany, Ireland, Kenya, Latvia, Liechtenstein, Luxembourg, Netherlands, Norway, Portugal.",
+          "text": "Heads of States and Governments: Austria, Bahrain, Canada, Croatia, Cyprus, Denmark, Estonia, Finland, France, Germany, Ireland, Kenya, Latvia, Liechtenstein, Luxembourg, Netherlands, Norway, Portugal, Spain.",
           "supports": [
             [
               "jurisdictions",
@@ -125799,7 +125808,7 @@
               "text"
             ]
           ],
-          "accessed": "2026-11-16",
+          "accessed": "2026-11-24",
           "anchors": [
             {
               "text": "The declaration has been signed on Monday 9 November 2026 by the following Heads of States and Governments and CEOs:",
@@ -125809,9 +125818,9 @@
         }
       ],
       "snapshot": {
-        "retrieved": "2026-11-16T08:51:09Z",
-        "sha256": "d0eaf90a604f99c84ecc94d4a0db7a41d0e8e963400a50667b7a867d85888bb3",
-        "text_sha256": "1e6cc7788424576cbcbfca494a56edcb6e8754c930147f28db67b83f7b77ed15",
+        "retrieved": "2026-11-24T16:31:21Z",
+        "sha256": "f8c8c8a349a01b7a42c56e195d786b3949bba7dbfefdde6c8ebaf65bb31fa650",
+        "text_sha256": "e50bd38e0327c9ff2fcebea0854a18bb09828f48bb839c4225e8d492f2ebc36a",
         "text_scheme": 1
       }
     },

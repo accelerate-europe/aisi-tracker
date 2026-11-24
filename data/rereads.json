@@ -6,7 +6,9 @@
   "20261116T150307Z-ea83f6",
   "20261123T040008Z-c8b1b5",
   "20261124T160618Z-57a29c",
-  "20261124T162557Z-bb2774"
+  "20261124T162557Z-bb2774",
+  "20261124T163604Z-3d98c5",
+  "20261124T164037Z-f95096"
  ],
  "sources": {
   "gb-rename": {
@@ -138,6 +140,12 @@
     "since": null,
     "last_attempt": "2026-11-24"
    },
+   "sha256:cc78e52e6ddc65e8361d8037d867003c86d1b4d542952220859325a3d905b7ab": {
+    "state": "confirmed",
+    "last_found": "2026-11-24",
+    "since": null,
+    "last_attempt": "2026-11-24"
+   },
    "sha256:cdfa613ad8468444562937bd2f6623cc2ff0bce476f678e8e11d26d73e012bf8": {
     "state": "confirmed",
     "last_found": "2026-11-24",
@@ -172,15 +180,9 @@
   "gb-jobad": {
    "sha256:4328f0e1065bd17faac185fd6aa6a878a3601e5e20cac12dd1733889b6001925": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
-   },
-   "sha256:8cbc34b4e62dc4c852873205d927fbb89b4e87fb62589da705a9ae1133be8e59": {
-    "state": "quote_gone",
-    "last_found": "2026-10-17",
-    "since": "2026-11-23",
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    }
   },
   "network-2025": {
@@ -1640,23 +1642,17 @@
    }
   },
   "ca-cifar": {
-   "sha256:2801a5376d1bd72332a1ad4d29f646f8c2cd48dda90b0d2714c051afb4df1678": {
-    "state": "quote_gone",
-    "last_found": "2026-11-16",
-    "since": "2026-11-23",
-    "last_attempt": "2026-11-23"
-   },
    "sha256:2cc7ae8a7349b9fe5ac0d0811ba043d7fb85cd7efccef8a7a6d425ff2666ab73": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    },
    "sha256:fa0768657dae3b76c4e9bb36d91a9f73e12b3381fe7e30100bcb04999662d80a": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    }
   },
   "ca-ised": {
@@ -7550,7 +7546,7 @@
     "state": "source_gone",
     "last_found": "2026-11-16",
     "since": "2026-11-23",
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    }
   },
   "negative-second-af-2026": {
@@ -14464,15 +14460,15 @@
   "fr-elysee-paris-call-2026": {
    "sha256:56f742b83aaa1673850ab16debb8cbca36e72188606a43b2c1a9c87764cffeec": {
     "state": "confirmed",
-    "last_found": "2026-11-23",
+    "last_found": "2026-11-24",
     "since": null,
-    "last_attempt": "2026-11-23"
+    "last_attempt": "2026-11-24"
    },
-   "sha256:59e7733d876a32792f094ad0bb059f379acbac490805c921c759ae73822fa766": {
-    "state": "quote_gone",
-    "last_found": "2026-11-16",
-    "since": "2026-11-23",
-    "last_attempt": "2026-11-23"
+   "sha256:96d0df934343d17fc9274bf835a108c6b0b7a7a7419713db84c772f4fe5ab375": {
+    "state": "confirmed",
+    "last_found": "2026-11-24",
+    "since": null,
+    "last_attempt": "2026-11-24"
    }
   },
   "br-camara-pl5960-2026": {
