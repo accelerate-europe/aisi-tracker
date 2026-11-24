@@ -67,7 +67,7 @@
  * Claims: current facts, body-role sentences and developments, their citations and closed Quote disclosures are in the saved page; bound excerpts, anchors and source re-read lines are built from page.json only on open. In cards and full records the sentence, Quote label and opened evidence, and in a function's panel the sentence, its source line (ending with the quote control) and the opened evidence (owner, 18 Nov 2026), have one --sp-2 gap between text lines; the label keeps its hit height without adding that height to the visible gap. A fact's sentence ends with " · " and the publication date of its earliest cited source, in muted ink before its citation, unless the sentence already names that year; with no published source date it shows none, never an access date (owner, 23 Nov 2026). Every quote fold shows "Quote" and the chevron. Its accessible name includes every translated quote and anchor language once, "Quote, translated from Norwegian", while the opened body ends with one small "Translated from Norwegian" line; no marker follows an individual quote. Translated quotes follow Naming, including the saved closest-body lead. Languages print by their plain name, never a variant or script (Bokmål and Nynorsk read Norwegian); exact codes stay in the data and downloads (tests/test_language_names.py).
  * Activity line: an ink qualifier after the closest body's name and stage where they are shown, only for live activity claims for that body; institute cards and legacy records show none; words come from ACTIVITY_WORDS and the vocabulary's short.
  * Sources: entry source lists hold sources that support the entry; population and region sources (display.generic_sources) are named once in Method and stay in the downloads; check_page check_generic_sources. A source line reads title, publisher, date. Running lines (a function panel's source line, a citation's hover, Method's inline links) abbreviate with one rule: the publisher without its bracketed parts or a "hosted by", "published by" or "reproducing" tail, a title over 80 characters cut at a word boundary with "…"; a record's source list and the hover (and the link's accessible name) keep the full form (owner, 18 Nov 2026; tests/test_running_source.py). The publisher is not printed again where the source's own title (original or English) already contains it, and a citation's tip drops it the same way (owner, 18 Nov 2026).
- * Archived copies (owner, 18 Nov 2026, "only when needed"): a source that could not be re-read ends its source line with " · archived copy" after its caveat, wherever it is named; a record's source list (the counted sources, a full record's Sources, a group's sources) also ends every other source that has an archive URL with it; a claim's own source line and Method's inline links give no other archived copy. Quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links).
+ * Archived copies (owner, 18 Nov 2026, "only when needed"): a source that could not be re-read ends its source line with " · archived copy" after its caveat, wherever it is named; a record's source list (the counted sources, a full record's Sources, a group's sources) also ends every other source that has an archive URL with it; a claim's own source line and Method's inline links give no other archived copy. Quiet link in muted ink with a muted underline, no arrow, never broken across lines; superscript citations never carry one (check_page check_archive_links). A source that is offline links to its archived copy wherever it is linked (hub, 24 Nov 2026); downloads keep its address.
  * Re-read line: a source list item whose source has a quotation with a re-read state shows that state once, from its quotations' states (docs/design/claims-1.1.md section 4). A source that could not be re-read (worst state offline, unreadable or quote not found; the earliest start, then offline before not found, then the earliest last found) ends its source line with " · last read {date}" (" · quote last found {date}" for a quote not found, as the source was read), then " · archived copy" where a copy exists; the full sentence is its tip and what a screen reader reads: "Source offline since {date}; last read {date}.", "Source could not be re-read since {date}; last read {date}.", "Not found in the source on {date}; last found {date}; under review." (with ": N of M quotes" after the first date when some quotations are still found) (owner, 18 Nov 2026). In a record's source list (the counted sources, a full record, a group's or a funding row's sources) any other source ends with one line of its own in the list's muted ink: "Source last re-read {date}."; nowhere else (owner, 18 Nov 2026, "source lists only"). A quotation or claim shown on its own shows only a failed state, its own, never its source's, as the full sentence with its archived copy; in a function's panel the claim's source line carries it instead; the page never says "verified" (check_page check_reread_lines).
  * Sorting: every table column sorts values by meaning, then values without a comparable figure, research gaps, structural absence; gaps stay last in both directions; ties by state name.
  * Links: inline text uses a thin muted-accent underline and accent ink; standalone links use position, icon or colour, with hover/focus underline or ink change. State names in linked lists (Testing and access, Institutional set-up) take the accent link style; None identified names take the card title's type. News names share the quiet date label.
@@ -1744,6 +1744,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     box.appendChild(detail); return box;
   }
   function recordSources(record) { return record ? record.display.source_links : []; }
+  // An offline source links to its archived copy wherever it is linked (principle: Archived copies).
+  function sourceHref(src) { var state = src.archive_url && rereadState(src); return state && state.worst.state === "source_gone" ? src.archive_url : src.url; }
   // A source with an archive URL ends its line with "· archived copy" (principle: Archived copies).
   function archiveCopy(parent, src) {
     if (!src.archive_url) return;
@@ -1981,7 +1983,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     });
     lines.forEach(function (line) {
       var id = line.id, src = line.src, full = line.full, shown = line.shown, publisher = line.publisher, li = el("li", "running-text"); li.dataset.sourceId = id;
-      var a = el("a", "standalone", shown); a.href = src.url; li.appendChild(a);
+      var a = el("a", "standalone", shown); a.href = sourceHref(src); li.appendChild(a);
       if (shown !== full) { a.setAttribute("aria-label", full); a.dataset.tip = full + (src.title_en ? " (" + src.title + ")" : ""); } // a cut title keeps its full form as name and hover
       if (src.title_en) withOriginal(a, src.title);
       else if (src.language && src.language !== "en") a.lang = src.language; // the page is lang="en"
@@ -2201,7 +2203,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
         return [id, n];
       }).sort(function (a, b) { return a[1] - b[1]; }).forEach(function (pair) {
         var id = pair[0], n = pair[1];
-        var a = el("a", "cn", String(n + 1)); a.href = S[id].url; a.dataset.sourceId = id;
+        var a = el("a", "cn", String(n + 1)); a.href = sourceHref(S[id]); a.dataset.sourceId = id;
         var src = S[id], shown = src.title_en || src.title;
         var runningPublisher = shortPublisher(src.publisher); // a citation's hover is a running line
         a.dataset.tip = shortTitle(shown) + (!runningPublisher || publisherInTitle(src, runningPublisher) ? "" : " (" + runningPublisher + ")");
@@ -2487,7 +2489,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       if (i) span.appendChild(document.createTextNode(", "));
       var dup = pubs.indexOf(s.publisher) !== pubs.lastIndexOf(s.publisher);
       var shown = shortPublisher(s.publisher) + (dup ? ": " + shortTitle(s.title) : ""), full = s.publisher + (dup ? ": " + s.title : "");
-      var a = el("a", null, shown); a.href = s.url; a.rel = "noopener"; a.title = s.title;
+      var a = el("a", null, shown); a.href = sourceHref(s); a.rel = "noopener"; a.title = s.title;
       if (shown !== full) a.setAttribute("aria-label", full); // an abbreviated running line keeps its full form as the accessible name
       span.appendChild(a); if (rereadTail(span, s)) archiveCopy(span, s); // Method names a source inline: its archived copy only beside its caveat
     });

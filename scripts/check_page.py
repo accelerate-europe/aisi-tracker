@@ -324,7 +324,7 @@ def check_dom(html: str, data: dict, dist: Path, base_url: str) -> list[str]:
     if not count or f"of {total}" not in count.get_text(" ", strip=True):
         errors.append(f"world table: count line does not name the total of {total}")
 
-    source_urls = {source["url"] for source in data["sources"]}
+    source_urls = {source_href(source) for source in data["sources"]}
     citations = soup.select(".cn, .cites a")
     if positive and not citations:
         errors.append("citation marks missing")
@@ -1690,7 +1690,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
     for li in required("li[data-source-id]", cited_cards):
         sid = str(li["data-source-id"])
         link = li.select_one("a[href]")
-        if sid not in sources or not link or link["href"] != sources[sid]["url"]:
+        if sid not in sources or not link or link["href"] != source_href(sources[sid]):
             errors.append(f"source list {sid}: URL does not match data")
             continue
         src = sources[sid]
@@ -1725,7 +1725,7 @@ def check_source_alignment(html: str, data: dict) -> list[str]:
             order = [li.get("data-source-id") for li in detail.select(".srcs li[data-source-id]")] if detail else []
         if sid not in order or cite.get_text(strip=True) != str(order.index(sid) + 1):
             errors.append(f"{jid}: citation {sid} differs from card source numbering")
-        if sid not in sources or cite.get("href") != sources[sid]["url"]:
+        if sid not in sources or cite.get("href") != source_href(sources[sid]):
             errors.append(f"{jid}: citation {sid} URL does not match data")
     fund_items = Keyed(soup, ".fund-detail[data-institute]", "data-institute")
     for institute in established_funding_institutes(data):
@@ -6861,7 +6861,7 @@ def check_generic_sources(html, data: dict) -> list[str]:
     box = soup.select_one("#generic-sources")
     links = {a.get("href") for a in box.select("a")} if box else set()
     for sid in sorted(generic):
-        if sources[sid]["url"] not in links:
+        if source_href(sources[sid]) not in links:
             errors.append(f"Method does not name generic source {sid}")
     text = box.get_text().replace(" (opens in a new tab)", "") if box else ""
     if not (text.startswith(GENERIC_LEAD) and text.endswith(GENERIC_TAIL)):
@@ -6878,10 +6878,28 @@ def reread_failed(source: dict) -> bool:
     return any(e.get("reread", {}).get("state") in {"blocked_or_failed", "source_gone", "quote_gone"} for e in source.get("excerpts", []))
 
 
+def reread_worst(source: dict) -> dict | None:
+    """The worst failed re-read state of a source's quotations, ordered as the page's Re-read line orders them."""
+    states = [e["reread"] for e in source.get("excerpts", []) if e.get("reread")]
+    rank = {"confirmed": 0, "not_attempted": 0, "blocked_or_failed": 1, "source_gone": 2, "quote_gone": 2}
+    tie = {"source_gone": 0, "quote_gone": 1, "blocked_or_failed": 2}
+    top = max((rank[r["state"]] for r in states), default=0)
+    if not top:
+        return None
+    return min((r for r in states if rank[r["state"]] == top), key=lambda r: (r["since"], tie[r["state"]], r["last_found"]))
+
+
+def source_href(source: dict) -> str:
+    """Archived copies (principle): an offline source with an archived copy links to the copy wherever it is linked."""
+    worst = reread_worst(source)
+    return source["archive_url"] if source.get("archive_url") and worst and worst["state"] == "source_gone" else source["url"]
+
+
 def check_archive_links(html, data: dict) -> list[str]:
     """Archived copies (principle): " · archived copy" ends a source's line where the source could not be re-read,
     after its caveat; a record's source list also gives every other archived copy; a claim's own sources and Method's
-    inline links give none otherwise. A source without an archive_url shows none.
+    inline links give none otherwise. A source without an archive_url shows none. An offline source with an
+    archived copy links to the copy (source_href) in its citation marks and source-list titles.
 
     The oracle is the data: each source list item names its source id, and the Method
     inline links follow display.generic_sources, then each other overview's source_links.
@@ -6938,7 +6956,7 @@ def check_archive_links(html, data: dict) -> list[str]:
         errors.append(f"Method: {len(spans)} inline source groups, data has {len(lists)}")
     for span, ids in zip(spans, lists):
         links = [a for a in span.select("a") if "archive" not in (a.get("class") or []) and not a.find_parent(class_="archive-copy")]
-        if [a.get("href") for a in links] != [sources[sid]["url"] for sid in ids]:
+        if [a.get("href") for a in links] != [source_href(sources[sid]) for sid in ids]:
             errors.append(f"Method: inline sources differ from data ({', '.join(ids)})")
             continue
         for n, (link, sid) in enumerate(zip(links, ids)):
@@ -6960,6 +6978,14 @@ def check_archive_links(html, data: dict) -> list[str]:
         errors.append(f"{len(shown)} archived copy links on the page, {expected} expected from source lists and Method")
     if any(a.find_parent(class_="cn") or "cn" in (a.get("class") or []) for a in shown):
         errors.append("a superscript citation carries an archived copy link")
+    # An offline source with an archived copy is linked to the copy wherever it is linked: its marks and source-list titles.
+    for sid, src in sources.items():
+        href = source_href(src)
+        if href == src["url"]:
+            continue
+        links = soup.select(f'a.cn[data-source-id="{sid}"]') + [li.select_one("a[href]") for li in soup.select(f'li[data-source-id="{sid}"]')]
+        if any(a is None or a.get("href") != href for a in links):
+            errors.append(f"offline source {sid}: a citation mark or source-list link does not go to its archived copy")
     return errors
 
 
@@ -6968,16 +6994,13 @@ def expected_reread_line(source: dict) -> str | None:
     states = [e["reread"] for e in source.get("excerpts", []) if e.get("reread")]
     if not states:
         return None
-    rank = {"confirmed": 0, "not_attempted": 0, "blocked_or_failed": 1, "source_gone": 2, "quote_gone": 2}
-    tie = {"source_gone": 0, "quote_gone": 1, "blocked_or_failed": 2}
-    top = max(rank[r["state"]] for r in states)
-    if not top:
+    worst = reread_worst(source)
+    if not worst:
         return f"Source last re-read {expected_date(max(r['last_found'] for r in states))}."
-    worst = min((r for r in states if rank[r["state"]] == top), key=lambda r: (r["since"], tie[r["state"]], r["last_found"]))
     since, found = expected_date(worst["since"]), expected_date(worst["last_found"])
     if worst["state"] == "quote_gone":
         gone = sum(r["state"] == "quote_gone" for r in states)
-        count = f": {gone} of {len(states)} quotes" if any(not rank[r["state"]] for r in states) else ""
+        count = f": {gone} of {len(states)} quotes" if any(r["state"] in {"confirmed", "not_attempted"} for r in states) else ""
         return f"Not found in the source on {since}{count}; last found {found}; under review."
     if worst["state"] == "source_gone":
         return f"Source offline since {since}; last read {found}."
@@ -10386,6 +10409,13 @@ FN_CLAIM_INDENT_JS = r"""detail => {
 
 
 FN_CLAIMS_CHECK_JS = "const claimIndentErrors = " + FN_CLAIM_INDENT_JS + ";\n" + r"""
+// Archived copies: an offline source (its worst quotation state source_gone, as the Re-read line orders states) links to its archived copy.
+const REREAD_RANK = {confirmed: 0, not_attempted: 0, blocked_or_failed: 1, source_gone: 2, quote_gone: 2}, REREAD_TIE = {source_gone: 0, quote_gone: 1, blocked_or_failed: 2};
+const sourceHref = s => {
+  const states = (s.excerpts || []).map(e => e.reread).filter(Boolean), top = Math.max(0, ...states.map(r => REREAD_RANK[r.state]));
+  const worst = top ? states.filter(r => REREAD_RANK[r.state] === top).sort((a, b) => a.since.localeCompare(b.since) || REREAD_TIE[a.state] - REREAD_TIE[b.state] || a.last_found.localeCompare(b.last_found))[0] : null;
+  return s.archive_url && worst?.state === 'source_gone' ? s.archive_url : s.url;
+};
 const functionMonth = day => day.length > 4 ? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+day.slice(5, 7) - 1] + ' ' + day.slice(0, 4) : day; // the page's fmtDate at month precision
 const checkHeading = (detail, cell, country, institute, code, key) => {
   const heading = detail.querySelector('.fn-function-head'), context = detail.querySelector(':scope > .fn-detail-context');
@@ -10426,7 +10456,7 @@ const checkEntry = (item, q, key, preview, panelOrder) => {
   const ids = [...new Set(q.claim.citations?.text || [])].filter(id => data.sources.some(s => s.id === id));
   ids.forEach(id => { if (!order.includes(id)) order.push(id); });
   const cited = order.filter(id => ids.includes(id)).map(id => data.sources.find(s => s.id === id));
-  need(JSON.stringify(links.map(a => a.href)) === JSON.stringify(cited.map(s => s.url)) && links.every((a, n) =>
+  need(JSON.stringify(links.map(a => a.href)) === JSON.stringify(cited.map(s => new URL(sourceHref(s), document.baseURI).href)) && links.every((a, n) =>
        a.target === '_blank' && a.dataset.sourceId === cited[n].id && a.textContent === String(order.indexOf(cited[n].id) + 1) &&
        a.getAttribute('aria-label')?.replace(/, opens in a new tab$/, '') === 'Source ' + a.textContent + ': ' + (cited[n].title_en || cited[n].title)), key + ': citation marks/links/names/card order differ');
   need(links.length === new Set(ids).size && cites?.textContent === links.map(a => a.textContent).join(',') && cites?.parentElement.matches('.cite-glue') &&

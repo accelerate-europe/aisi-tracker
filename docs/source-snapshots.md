@@ -68,7 +68,7 @@ Headless Chromium runs only inside the shared browser lock (`scripts/browser_loc
 uv run --locked scripts/monitor_sources.py --report work/monitor
 ```
 
-The weekly run is a scheduled job on the maintainers' host, configured outside this repository, and off until the owner switches it on.
+The weekly run is a scheduled job on the maintainers' host, configured outside this repository, on Mondays at 04:00 UTC. It writes nothing tracked: after each run a maintainer regenerates `data/rereads.json` with `--rereads`, reviews it and commits it as data.
 
 `--rereads` fetches nothing: it replays the whole check log into the tracked `data/rereads.json`, each bound quotation's re-read state and dates (keyed by source ID, then quotation hash; an excerpt's anchors are compared and replayed as spans with their own hashes, and the build gives the excerpt the worst of its spans), and is that file's only writer (`scripts/rereads.py`; states, expiry and alerts in [claims design section 4](design/claims-1.1.md#4-freshness-and-expiry)). The file carries states and dates only, never the log's paths, responses or texts; regenerate it after each run and commit it as data, so the build and CI need no private store.
 

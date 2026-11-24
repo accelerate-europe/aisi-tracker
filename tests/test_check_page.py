@@ -1002,6 +1002,34 @@ def test_archive_links_only_where_needed():
     assert check_page.check_archive_links(as_citation, data) == ["a superscript citation carries an archived copy link"]
 
 
+def test_offline_source_links_to_its_archived_copy():
+    archive = "https://web.archive.org/web/1/https://g.example/"
+    src = lambda *excerpts, **extra: {"url": "https://g.example/", "excerpts": list(excerpts), **extra}  # noqa: E731
+    assert check_page.source_href(src(_reread("source_gone", "2026-10-17", "2026-11-10"), archive_url=archive)) == archive
+    # Not offline, or no copy: the source's own address.
+    assert check_page.source_href(src(_reread("blocked_or_failed", "2026-10-17", "2026-11-10"), archive_url=archive)) == "https://g.example/"
+    assert check_page.source_href(src(_reread("source_gone", "2026-10-17", "2026-11-10"))) == "https://g.example/"
+    # The worst state decides, as the Re-read line orders it: an earlier lost quote leads an offline source.
+    assert check_page.source_href(src(_reread("quote_gone", "2026-10-17", "2026-11-01"), _reread("source_gone", "2026-10-17", "2026-11-10"),
+                                      archive_url=archive)) == "https://g.example/"
+    # Same start: offline wins over a lost quote, in either order.
+    pair = [_reread("quote_gone", "2026-10-17", "2026-11-10"), _reread("source_gone", "2026-10-20", "2026-11-10")]
+    for excerpts in (pair, pair[::-1]):
+        assert check_page.source_href(src(*excerpts, archive_url=archive)) == archive
+    # Same state and start: the earliest last found leads.
+    pair = [_reread("source_gone", "2026-10-17", "2026-11-10"), _reread("source_gone", "2026-10-03", "2026-11-10")]
+    for excerpts in (pair, pair[::-1]):
+        assert check_page.reread_worst(src(*excerpts))["last_found"] == "2026-10-03"
+    assert check_page.reread_worst(src(_reread("confirmed"), _reread("not_attempted"))) is None
+    data = _archive_data()
+    data["sources"][2]["excerpts"] = [_reread("source_gone", "2026-10-17", "2026-11-10")]
+    html = _archive_html().replace('<p>Value<sup>', '<p>Value<sup><a class="cn" data-source-id="gone" href="https://g.example/">3</a>')
+    errors = check_page.check_archive_links(html, data)
+    assert "offline source gone: a citation mark or source-list link does not go to its archived copy" in errors
+    fixed = html.replace('href="https://g.example/"', f'href="{archive}"')
+    assert not [e for e in check_page.check_archive_links(fixed, data) if e.startswith("offline source")]
+
+
 def test_reread_caveat_ends_the_source_line():
     data = _archive_data()
     assert check_page.check_reread_lines(_archive_html(), data) == []
