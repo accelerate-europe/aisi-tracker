@@ -10397,7 +10397,7 @@ const checkHeading = (detail, cell, country, institute, code, key) => {
   if (context) need(['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'color'].every(k => getComputedStyle(context)[k] === getComputedStyle(probe)[k]), key + ': context is not muted list-level type');
   probe.remove();
 };
-const checkEntry = (item, q, key) => {
+const checkEntry = (item, q, key, preview) => {
   const sentence = item?.querySelector(':scope > .meta-item > .claim-text'), sources = item?.querySelector(':scope > .meta-item > .fn-sources');
   const day = item?.querySelector(':scope > .meta-item > .fn-entry-date');
   need(sentence?.textContent.replace(/\u00a0/g, ' ') === q.claim.text, key + ': claim text differs');
@@ -10411,7 +10411,9 @@ const checkEntry = (item, q, key) => {
   need(JSON.stringify(links.map(a => a.href)) === JSON.stringify(cited.map(s => s.url)) && links.every((a, n) =>
        a.target === '_blank' && a.textContent.replace(/\u00a0/g, ' ') === cited[n].publisher && a.getAttribute('aria-label') === (cited[n].title_en || cited[n].title)), key + ': claim publishers/links/titles/order differ');
   const fold = item?.querySelector(':scope > details.quote'), summary = fold?.querySelector(':scope > summary');
-  need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === q.claim.id && fold === item.lastElementChild &&
+  // A preview line ends with its publishers; only the opened list carries the Quote control.
+  if (preview) need(!item?.querySelector('details.quote') && sources?.parentElement === item?.lastElementChild, key + ': a preview line carries a Quote control');
+  else need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === q.claim.id && fold === item.lastElementChild &&
        summary.querySelector('.qualifier-text')?.textContent === 'Quote' && fold.previousElementSibling?.matches('.sep-gap') && fold.previousElementSibling.previousElementSibling === sources?.parentElement,
        key + ': the quote control is not a closed, lazy Quote fold after the publishers separator');
   if (item && sentence && sources) {
@@ -10748,7 +10750,7 @@ def check_functions_phone(browser, base_url: str, data: dict, widths=PHONE_WIDTH
                       need(item.children.length === 1 + Number(!!latest) + Number(!!mandate), labelKey + ': function has extra preview lines');
                       if (latest) {
                         need(latest.claim.id === f.claim_ids.find(id => quotes[id].claim.basis === 'activity' && !quotes[id].claim.expired) && label?.nextElementSibling === newest, labelKey + ': latest preview is not the first live activity');
-                        checkEntry(newest, latest, labelKey + ': latest');
+                        checkEntry(newest, latest, labelKey + ': latest', true);
                       }
                       if (mandate) {
                         const source = mandate.source, link = task?.querySelector('a');

@@ -1929,7 +1929,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var parts = [];
       if (date) { var day = dated(date); day.classList.add("fn-entry-date"); parts.push(day); }
       parts.push(line, options.entrySources); block.appendChild(separated(parts));
-      quoteOnSourceLine(quoteDisclosure(c), block); return block;
+      if (!options.noQuote) quoteOnSourceLine(quoteDisclosure(c), block); // a preview line points to its source; the opened list holds the quote
+      return block;
     }
     var citeHost = line;
     if (date) {
@@ -3600,9 +3601,9 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       }
       function fnSince(row) { return row.since ? " since " + fmtDate(row.since.slice(0, 7)) : ""; }
       function fnStatus(row) { return names[row.value].toLowerCase() + (["activity", "both"].indexOf(row.value) >= 0 ? fnSince(row) : ""); }
-      function fnEntry(id) {
+      function fnEntry(id, preview) {
         var entry = CLAIM_INDEX[id], day = entry.excerpts[0].source.published; // A function claim has exactly one text binding.
-        return claimBlock(entry.claim, null, null, day && day.slice(0, 7), { entrySources: fnSources(fieldCitations(entry.claim, ["text"]), id, { publishers: true }) });
+        return claimBlock(entry.claim, null, null, day && day.slice(0, 7), { entrySources: fnSources(fieldCitations(entry.claim, ["text"]), id, { publishers: true }), noQuote: !!preview });
       }
       function fnTask(row) {
         var id = row.claim_ids.find(function (id) { return CLAIM_INDEX[id].claim.basis === "mandate"; });
@@ -3749,7 +3750,7 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
                 // The status reads in the name's line, so it wraps to the name's start and the selection spans both.
                 name.appendChild(sepGap()); name.appendChild(trailingQualifier(fnStatus(row), "fn-function-status"));
                 li.appendChild(label);
-                if (row.newest) { var latest = fnEntry(row.newest); latest.classList.add("fn-preview", "fn-latest"); li.appendChild(latest); }
+                if (row.newest) { var latest = fnEntry(row.newest, true); latest.classList.add("fn-preview", "fn-latest"); li.appendChild(latest); }
                 var task = fnTask(row); if (task) li.appendChild(task);
                 functions.appendChild(li);
               }); detail.appendChild(heading); detail.appendChild(functions);
