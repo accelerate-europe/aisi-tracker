@@ -4,8 +4,8 @@
     "title": "AI Security Institutes tracker",
     "description": "Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.",
     "definition": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. Being a regulator, certification body or cyber security agency is not enough on its own.",
-    "version": "1.1.3-dev",
-    "as_of": "2026-11-23",
+    "version": "1.1.4-dev",
+    "as_of": "2026-11-24",
     "license": "CC BY 4.0",
     "license_note": "Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.",
     "publisher": "Accelerate Europe",
@@ -18,7 +18,7 @@
     ],
     "contact": "contact@accelerate-europe.org",
     "repository": "https://github.com/accelerate-europe/aisi-tracker",
-    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.1.2, data as of 23 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.1.3, data as of 24 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
     "doi": "10.5281/zenodo.23600431",
     "scope": "Status is tracked for all 193 UN member states, Taiwan (as a territory) and the EU AI Office. The Europe page counts the 27 EU member states, Iceland, Liechtenstein, Norway, the United Kingdom and Switzerland.",
     "method": [
@@ -32574,6 +32574,17 @@
           ]
         },
         {
+          "id": "claims-71e93d19fa3d43a59aff3cf92fea6c78",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "Found that, in the network's joint multilingual testing, both models showed acceptability rates above 90% in French on the MLCommons and AnswerCarefully datasets.",
+          "source_ids": [
+            "network-multilingual-2025",
+            "fix-output-fr-inesia-evaluation-prioritisation-guidance"
+          ]
+        },
+        {
           "id": "claims-4d1cc3be51da4f70b2bb35acd0b24750",
           "kind": "function",
           "code": "regulatory_support",
@@ -37012,6 +37023,16 @@
           ]
         },
         {
+          "id": "claims-6163465b322d421a93bd0e7e1ee3b71e",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "Tested two models on a translated subset of the original datasets in the network's joint multilingual testing exercise.",
+          "source_ids": [
+            "network-multilingual-2025"
+          ]
+        },
+        {
           "id": "claims-9b1b78c24b4848fabf57585f7135b4c2",
           "kind": "function",
           "code": "talent",
@@ -38370,6 +38391,16 @@
           ]
         },
         {
+          "id": "claims-277280ea0ff5407593c7ba38e0c1c6c1",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "Its team took part in the network's second joint testing exercise, on multilingual testing.",
+          "source_ids": [
+            "network-multilingual-2025"
+          ]
+        },
+        {
           "id": "claims-aef25f53ece0411e9ce9098eb3a4e2e9",
           "kind": "function",
           "code": "convening",
@@ -39171,6 +39202,16 @@
           "text": "Signed a memorandum of understanding with the Singapore AI Safety Institute to strengthen cooperation centred on AI safety evaluation.",
           "source_ids": [
             "kr-sg-mou-2026"
+          ]
+        },
+        {
+          "id": "claims-f8cc62213f754e3694c8ecb9dc0b0162",
+          "kind": "function",
+          "code": "international_cooperation",
+          "basis": "activity",
+          "text": "Found that, across the network's joint evaluation, the models showed generally high fluency and surface-level coherence in Korean.",
+          "source_ids": [
+            "network-multilingual-2025"
           ]
         },
         {
@@ -63526,6 +63567,17 @@
                 "id": "claims-245b002026c242a8ab07de33f41e19a9"
               },
               "text"
+            ],
+            [
+              "institutes",
+              {
+                "id": "ca-caisi"
+              },
+              "claims",
+              {
+                "id": "claims-6163465b322d421a93bd0e7e1ee3b71e"
+              },
+              "text"
             ]
           ],
           "accessed": "2026-10-17",
@@ -63533,6 +63585,81 @@
             {
               "text": "Contributed by Canada AISI",
               "kind": "heading"
+            }
+          ]
+        },
+        {
+          "text": "The Japan team participated in the second Joint Testing Exercise (JTE) focusing on Multilingual Testing.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-277280ea0ff5407593c7ba38e0c1c6c1"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "Contributed by Japan AISI",
+              "kind": "heading"
+            }
+          ]
+        },
+        {
+          "text": "Across the joint evaluation, large language models demonstrated generally high fluency and surface-level coherence in Korean.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-f8cc62213f754e3694c8ecb9dc0b0162"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "Contributed by Korea AISI",
+              "kind": "heading"
+            }
+          ]
+        },
+        {
+          "text": "Both models showcase high acceptability rates in French (above 90%) for both the MLCommons and the AnswerCarefully datasets.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "fr-inesia"
+              },
+              "claims",
+              {
+                "id": "claims-71e93d19fa3d43a59aff3cf92fea6c78"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "Contributed by France AISI",
+              "kind": "heading"
+            },
+            {
+              "text": "INESIA - the French AISI",
+              "kind": "definition",
+              "source_id": "fix-output-fr-inesia-evaluation-prioritisation-guidance",
+              "gloss": "INESIA - the French AISI"
             }
           ]
         }
@@ -130395,6 +130522,20 @@
         "Page: the Closest body block no longer repeats the name and stage when the summary gives them.",
         "Page: a qualifier line that wraps keeps its separator dot at the end of the first line.",
         "Checks recorded since 1.1.1: the news check of 23 November 2026 for all 15 institutes and a partial check of 23 November for Estonia. No record's full-check date changed."
+      ]
+    },
+    {
+      "date": "2026-11-24",
+      "version": "1.1.3",
+      "summary": "The Functions view now shows since when an institute has done each kind of work, and its latest example. Twenty examples were added, and 130 sentences were reworded to say plainly what each institute does.",
+      "changes": [
+        "Functions: for work an institute carries out, the page now says \"active since at least\" a date and shows the latest example. The date is that of the oldest published text in which we found the work. It is left out where we know of older work that we have not added yet.",
+        "Functions: an opened function shows when the task was assigned and since when the institute has been active. Below that it lists the assignment and the three most recent examples, each with its date and source; older ones sit under \"earlier\". The general definition of the function is no longer repeated there.",
+        "20 examples added, from sources the tracker already cited: the United Kingdom (7), the United States (6), Canada (2), Singapore (2), the EU AI Office (2) and South Korea (1). Among them are the joint evaluation of an Anthropic model by the UK and US institutes, the US evaluation of GLM-5.3, and the joint test by the Korean and Singapore institutes of whether AI agents leak sensitive data.",
+        "Functions: the UK's research, the EU AI Office's standards and guidelines, and Canada's model testing and research now read Active, not only assigned.",
+        "130 sentences reworded. A sentence now says what the institute does or was tasked with, and the source mark shows who published it. It names a speaker only where someone other than the publisher speaks, and starts with \"It says\" where an institute describes its work only in general terms.",
+        "Downloads and API: each institute's `functions` rows and `functions.csv` gain `since` and `newest`. In `claim_ids`, assignments come first, then examples, newest first.",
+        "Sources: publication dates added for six sources, each taken from the source itself. 1,303 sources in total, none added."
       ]
     }
   ]
