@@ -110,7 +110,9 @@ def function_rows(institute: dict, vocabularies: dict, text_sources: dict | None
         expired = [c for c in matching if c.get("basis") == "activity" and c.get("expired")]
         # Padding puts a partial date before longer dates with the same prefix; stable sorting preserves ties.
         live.sort(key=lambda c: (dates[c["id"]] or "").ljust(10), reverse=True)
-        since = min((dates[c["id"]] for c in live), key=lambda day: day.ljust(10)) if live and all(dates[c["id"]] for c in live) else None
+        dated_live = [dates[c["id"]] for c in live if dates[c["id"]]]
+        # "Since at least" the oldest dated entry: an undated entry may be older, but the dated one still bounds it.
+        since = min(dated_live, key=lambda day: day.ljust(10)) if dated_live else None
         if since and any(earlier(day, since) for day in held.get(code, [])):
             since = None  # older held work of this kind has no entry yet
         rows.append({"code": code, "value": value, "claim_ids": [c["id"] for c in mandates + live + expired],

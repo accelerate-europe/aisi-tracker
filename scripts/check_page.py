@@ -10152,7 +10152,7 @@ def functions_structure(html: str, data: dict) -> list[str]:
             need(("fn-group-start" in td.get("class", [])) == (n > 0 and vocab[code]["group"] != vocab[columns[n - 1]]["group"]), key + ": body group gap differs")
             button = td.select_one("button.fn-cell")
             if value in ("mandate", "activity", "both"):
-                since = f" since {function_month(expected['since'])}" if value in ("activity", "both") and expected.get("since") else ""
+                since = f" since at least {function_month(expected['since'])}" if value in ("activity", "both") and expected.get("since") else ""
                 need(button and button.get("type") == "button" and button.get("aria-label") == f"{place}, {vocab[code]['label']}: {FN_NAMES[value].lower()}{since}"
                      and button.get("aria-expanded") == "false" and bool(button.get("aria-controls")), key + ": coded control/name differs")
             else:
@@ -10390,7 +10390,7 @@ const checkHeading = (detail, cell, country, institute, code, key) => {
   const states = {mandate: assigned && !active, activity: active && !assigned, both: active && !assigned};
   need((!(cell.value in states) || states[cell.value]) && said.includes(institute), key + ': grid status must name the institute short form');
   need(!/without an assignment/i.test(said), key + ': status states an absence');
-  need(cell.since && cell.value !== 'mandate' ? said.includes('active since ' + functionMonth(cell.since)) : !said.includes(' since '), key + ': grid status since differs');
+  need(cell.since && cell.value !== 'mandate' ? said.includes('active since at least ' + functionMonth(cell.since)) : !said.includes(' since '), key + ': grid status since differs');
   need(context && (heading?.closest('.fn-detail-top') || heading)?.nextElementSibling === context &&
        context.nextElementSibling?.matches('.fn-claim, .fn-basis'), key + ': heading/context/claim order differs');
   const probe = document.createElement('span'); probe.style.cssText = 'font:var(--type-label);color:var(--muted)'; detail.appendChild(probe);
@@ -10739,7 +10739,7 @@ def check_functions_phone(browser, base_url: str, data: dict, widths=PHONE_WIDTH
                       const label = item.querySelector(':scope > .fn-function-label');
                       const name = label?.querySelector(':scope > .fn-name');
                       const marked = ['activity', 'mandate', 'both'].includes(f.value), labelKey = key + '/' + f.code;
-                      const since = f.since && ['activity', 'both'].includes(f.value) ? ' since ' + functionMonth(f.since) : '';
+                      const since = f.since && ['activity', 'both'].includes(f.value) ? ' since at least ' + functionMonth(f.since) : '';
                       const statusWord = names[f.value].toLowerCase() + since;
                       need(label && name && label.textContent === f.label + ' ' + statusWord && (label.tagName === 'BUTTON') === marked, labelKey + ': function label/control differs');
                       const status = name?.querySelector(':scope > .fn-function-status');

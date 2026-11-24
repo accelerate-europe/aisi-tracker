@@ -125,7 +125,7 @@ def test_function_rows_order_live_evidence_and_preserve_partial_dates(undated):
     row = next(r for r in rows if r["code"] == "research")
     assert row == {"code": "research", "value": "both",
                    "claim_ids": ["mandate", "mandate-second", "full", "tied", "month", "older", "year"] + (["undated"] if undated else []) + ["expired-first", "expired-second"],
-                   "since": None if undated else "2024", "newest": "full"}
+                   "since": "2024", "newest": "full"}
 
 
 def test_function_rows_only_undated_and_expired_activity():

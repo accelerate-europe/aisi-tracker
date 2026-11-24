@@ -95,7 +95,7 @@ def test_grid_control_names_since_at_month_precision(functions, day, label):
     next(row for row in institute["functions"] if row["code"] == "testing")["since"] = day
     assert check_page.function_month(day) == label
     assert any("coded control/name differs" in e for e in check_page.functions_structure(html, data))
-    html = html.replace('aria-label="Zulu, Testing: active"', 'aria-label="Zulu, Testing: active since ' + label + '"')
+    html = html.replace('aria-label="Zulu, Testing: active"', 'aria-label="Zulu, Testing: active since at least ' + label + '"')
     assert check_page.functions_structure(html, data) == []
 
 
@@ -238,7 +238,7 @@ def test_function_rows_put_an_undated_status_last_in_its_block(functions):
     ("The government gives it the function (ASSIGNED).", ["(ASSIGNED)"]),
     ("It does it ( active ) and is tasked with it (assigned).", ["( active )", "(assigned)"]),
     ("Active: it does the work. Assigned: the law gives it the function.", []),
-    ("It has a role (assigned by law) and staff (active since 2024).", []),
+    ("It has a role (assigned by law) and staff (active since at least 2024).", []),
     ("(active)", []),
     ("A heading. (Assigned).", []),
     ("(active)\nA separate sentence.", []),
@@ -376,9 +376,9 @@ for(const [value,ids,since,sentence,status] of [
   ['mandate',['m'],'2024-11','Assigned to UK AISI','assigned'],
   ['activity',['a'],null,'UK AISI is active','active'],
   ['both',['m','m2','a'],null,'UK AISI is active','active'],
-  ['activity',['a'],'2024-11-20','UK AISI is active since Nov 2024','active since Nov 2024'],
-  ['both',['m','m2','a'],'2024-11','UK AISI is active since Nov 2024','active since Nov 2024'],
-  ['activity',['a'],'2024','UK AISI is active since 2024','active since 2024']
+  ['activity',['a'],'2024-11-20','UK AISI is active since at least Nov 2024','active since at least Nov 2024'],
+  ['both',['m','m2','a'],'2024-11','UK AISI is active since at least Nov 2024','active since at least Nov 2024'],
+  ['activity',['a'],'2024','UK AISI is active since at least 2024','active since at least 2024']
 ]) for(const inline of [false,true]) {
   rows.sample.test={value,claim_ids:ids,since};
   assert.equal(fnStatus(rows.sample.test),status);
