@@ -57,15 +57,15 @@ def functions():
     </tr></thead>
     <tbody><tr class="fn-group"><th scope="rowgroup">Established</th><td class="fn-column fn-group-first" data-code="testing" aria-hidden="true"></td><td class="fn-column" data-code="research" aria-hidden="true"></td><td class="fn-column fn-group-start" data-code="advice" aria-hidden="true"></td><td class="fn-column" data-code="foresight" aria-hidden="true"></td><td class="fn-column" data-code="incidents" aria-hidden="true"></td><td class="fn-pad" aria-hidden="true"></td></tr>
     <tr data-institute="z"><th scope="row"><abbr class="g" tabindex="0" aria-description="Zulu Institute">Zulu</abbr></th>
-    <td data-code="testing" data-value="activity"><button type="button" class="fn-cell" aria-label="Zulu, Testing: Active" aria-expanded="false" aria-controls="detail-z"><span class="fn-mark fn-activity" aria-hidden="true"></span></button></td>
+    <td data-code="testing" data-value="activity"><button type="button" class="fn-cell" aria-label="Zulu, Testing: active" aria-expanded="false" aria-controls="detail-z"><span class="fn-mark fn-activity" aria-hidden="true"></span></button></td>
     <td data-code="research" data-value="not_found"><span class="vh">not found</span></td>
-    <td data-code="advice" data-value="mandate" class="fn-group-start"><button type="button" class="fn-cell" aria-label="Zulu, Advice: Assigned" aria-expanded="false" aria-controls="detail-z"><span class="fn-mark fn-mandate" aria-hidden="true"></span></button></td>
+    <td data-code="advice" data-value="mandate" class="fn-group-start"><button type="button" class="fn-cell" aria-label="Zulu, Advice: assigned" aria-expanded="false" aria-controls="detail-z"><span class="fn-mark fn-mandate" aria-hidden="true"></span></button></td>
     <td data-code="foresight" data-value="not_found"><span class="vh">not found</span></td>
     <td data-code="incidents" data-value="not_found"><span class="vh">not found</span></td><td class="fn-pad" aria-hidden="true"></td></tr>
     </tbody><tbody><tr class="fn-group"><th scope="rowgroup">Not yet established</th><td class="fn-column fn-group-first" data-code="testing" aria-hidden="true"></td><td class="fn-column" data-code="research" aria-hidden="true"></td><td class="fn-column fn-group-start" data-code="advice" aria-hidden="true"></td><td class="fn-column" data-code="foresight" aria-hidden="true"></td><td class="fn-column" data-code="incidents" aria-hidden="true"></td><td class="fn-pad" aria-hidden="true"></td></tr>
     <tr data-institute="a"><th scope="row"><abbr class="g" tabindex="0" aria-description="Alpha Institute">Alpha</abbr></th>
-    <td data-code="testing" data-value="both"><button type="button" class="fn-cell" aria-label="Alpha, Testing: Assigned and active" aria-expanded="false" aria-controls="detail-a"><span class="fn-mark fn-activity" aria-hidden="true"></span></button></td>
-    <td data-code="research" data-value="activity"><button type="button" class="fn-cell" aria-label="Alpha, Research: Active" aria-expanded="false" aria-controls="detail-a"><span class="fn-mark fn-activity" aria-hidden="true"></span></button></td>
+    <td data-code="testing" data-value="both"><button type="button" class="fn-cell" aria-label="Alpha, Testing: active" aria-expanded="false" aria-controls="detail-a"><span class="fn-mark fn-activity" aria-hidden="true"></span></button></td>
+    <td data-code="research" data-value="activity"><button type="button" class="fn-cell" aria-label="Alpha, Research: active" aria-expanded="false" aria-controls="detail-a"><span class="fn-mark fn-activity" aria-hidden="true"></span></button></td>
     <td data-code="advice" data-value="not_coded" class="fn-group-start"><span class="vh">not yet coded</span></td>
     <td data-code="foresight" data-value="not_found"><span class="vh">not found</span></td>
     <td data-code="incidents" data-value="not_found"><span class="vh">not found</span></td><td class="fn-pad" aria-hidden="true"></td></tr>
@@ -95,7 +95,7 @@ def test_grid_control_names_since_at_month_precision(functions, day, label):
     next(row for row in institute["functions"] if row["code"] == "testing")["since"] = day
     assert check_page.function_month(day) == label
     assert any("coded control/name differs" in e for e in check_page.functions_structure(html, data))
-    html = html.replace('aria-label="Zulu, Testing: Active"', 'aria-label="Zulu, Testing: Active, since ' + label + '"')
+    html = html.replace('aria-label="Zulu, Testing: active"', 'aria-label="Zulu, Testing: active since ' + label + '"')
     assert check_page.functions_structure(html, data) == []
 
 
@@ -133,8 +133,8 @@ def test_function_rows_order_by_year_then_name_then_id(functions):
 @pytest.mark.parametrize(("old", "new", "finding"), [
     ('data-value="activity"', 'data-value="mandate"', "value counts"),
     ('<colgroup span="2"></colgroup>', '<colgroup span="3"></colgroup>', "column groups"),
-    ('aria-label="Zulu, Testing: Active"', 'aria-label="ZI, Testing: Active"', "coded control/name"),
-    ('aria-label="Alpha, Testing: Assigned and active"', 'aria-label="Alpha, Testing: Active"', "coded control/name"),
+    ('aria-label="Zulu, Testing: active"', 'aria-label="ZI, Testing: active"', "coded control/name"),
+    ('aria-label="Alpha, Testing: active"', 'aria-label="Alpha, Testing: assigned and active"', "coded control/name"),
     ('aria-description="Testing: Tests models."', 'aria-description="Wrong test."', "function label/test"),
     ('aria-description="Zulu Institute"', 'aria-description="Wrong institute"', "row name/institute tip"),
     ('aria-description="Zulu Institute"', 'aria-description="Zulu Institute (planned)"', "status word in row tip"),
@@ -215,7 +215,7 @@ def test_functions_structure_keeps_a_group_coded_nowhere(functions):
     data, html = functions
     data = copy.deepcopy(data)
     next(r for r in data["institutes"][1]["functions"] if r["code"] == "advice")["value"] = "not_coded"
-    mandate = '<td data-code="advice" data-value="mandate" class="fn-group-start"><button type="button" class="fn-cell" aria-label="Zulu, Advice: Assigned" aria-expanded="false" aria-controls="detail-z"><span class="fn-mark fn-mandate" aria-hidden="true"></span></button></td>'
+    mandate = '<td data-code="advice" data-value="mandate" class="fn-group-start"><button type="button" class="fn-cell" aria-label="Zulu, Advice: assigned" aria-expanded="false" aria-controls="detail-z"><span class="fn-mark fn-mandate" aria-hidden="true"></span></button></td>'
     assert mandate in html
     html = (html.replace(mandate, '<td data-code="advice" data-value="not_coded" class="fn-group-start"><span class="vh">not yet coded</span></td>')
             .replace('<td data-code="advice">1</td>', '<td data-code="advice">0</td>')
@@ -364,19 +364,21 @@ function el(tag,cls='',text='') {
 const document={createTextNode:text=>el('#text','',text)}, S={}, SOURCE_ORDERS={};
 const citations=()=>{}, fieldCitations=()=>[], fnSources=()=>el('ul'), claimBlock=()=>el('div','fn-claim');
 const quoteOnSourceLine=()=>{}, glueCitations=()=>{}, externalLinks=()=>{};
-const instShort=i=>el('span','',i.short_name), names={mandate:'Assigned',activity:'Active',both:'Assigned and active'};
+const instShort=i=>el('span','',i.short_name), names={mandate:'Assigned',activity:'Active',both:'Active'};
 const i={id:'sample',jurisdiction_id:'XX',short_name:'UK AISI'}, rows={sample:{test:{}}};
 const CLAIM_INDEX={a:{claim:{basis:'activity',text:'It ran tests.'},excerpts:[{source:{published:'2024-11-20'}}]},m:{claim:{basis:'mandate'},excerpts:[]},m2:{claim:{basis:'mandate'},excerpts:[]}};
 COPY
 DATES
 RENDERER
+fnEntry=()=>el('div','fn-claim');
 for(const [value,ids,since,sentence,status] of [
   ['mandate',['m'],null,'Assigned to UK AISI','assigned'],
-  ['activity',['a'],null,'UK AISI is active, without an assignment','active, without an assignment'],
-  ['both',['m','m2','a'],null,'Assigned to UK AISI, and active','assigned and active'],
-  ['activity',['a'],'2024-11-20','UK AISI is active since Nov 2024, without an assignment','active since Nov 2024, without an assignment'],
-  ['both',['m','m2','a'],'2024-11','Assigned to UK AISI, and active since Nov 2024','assigned and active since Nov 2024'],
-  ['activity',['a'],'2024','UK AISI is active since 2024, without an assignment','active since 2024, without an assignment']
+  ['mandate',['m'],'2024-11','Assigned to UK AISI','assigned'],
+  ['activity',['a'],null,'UK AISI is active','active'],
+  ['both',['m','m2','a'],null,'UK AISI is active','active'],
+  ['activity',['a'],'2024-11-20','UK AISI is active since Nov 2024','active since Nov 2024'],
+  ['both',['m','m2','a'],'2024-11','UK AISI is active since Nov 2024','active since Nov 2024'],
+  ['activity',['a'],'2024','UK AISI is active since 2024','active since 2024']
 ]) for(const inline of [false,true]) {
   rows.sample.test={value,claim_ids:ids,since};
   assert.equal(fnStatus(rows.sample.test),status);
@@ -387,12 +389,6 @@ for(const [value,ids,since,sentence,status] of [
   assert.deepEqual(evidence.map(n=>n.className==='fn-basis'?n.textContent:n.dataset.claim),
     value==='both'?['Assignment','m','m2','Activity','a']:ids);
 }
-assert.equal(fnNewest({newest:'a'}),'Newest: It ran tests. (Nov 2024)');
-CLAIM_INDEX.a.excerpts[0].source.published='2024';
-assert.equal(fnNewest({newest:'a'}),'Newest: It ran tests. (2024)');
-delete CLAIM_INDEX.a.excerpts[0].source.published;
-assert.equal(fnNewest({newest:'a'}),'Newest: It ran tests.');
-assert.equal(fnNewest({newest:null}),'');
 for(const count of [1,3,4,6]) for(const value of ['activity','both']) for(const inline of [false,true]) {
   // Generated order is authoritative, even when IDs do not sort in date order.
   const activityIds=['z','a','q','b','expired-z','expired-a'].slice(0,count);
@@ -414,6 +410,80 @@ for(const count of [1,3,4,6]) for(const value of ['activity','both']) for(const 
 }
 """.replace('COPY', copy).replace('DATES', dates).replace('RENDERER', renderer)
     subprocess.run(['node', '-'], input=script, text=True, capture_output=True, check=True)
+
+
+def test_function_entry_and_task_use_bound_source_date_and_publisher():
+    """The bound source may follow another citation; preview and opened entries share this renderer."""
+    import subprocess
+
+    source = (Path(__file__).resolve().parents[1] / 'site/index.html').read_text()
+    helpers = source[source.index('  function sepGap('):source.index('  // One footer for full records')]
+    helpers += source[source.index('  function quoteOnSourceLine('):source.index('  function shownLead(')]
+    helpers += source[source.index('  function claimBlock('):source.index('  // Keep the generated finding')]
+    helpers += source[source.index('      function fnPublisher('):source.index('      function fnSummary(')]
+    helpers += source[source.index('      function fnSince('):source.index('      function appendClaims(')]
+    helpers += source[source.index('  var MON ='):source.index('  // A date inside running text')]
+    helpers += source[source.index('  function dated('):source.index('  function nonbreakingDates(')]
+    script = """
+const assert=require('node:assert/strict');
+function el(tag,cls='',text='') {
+  const node={tag,className:cls||'',children:[],dataset:{},attrs:{},open:false,
+    setAttribute(k,v){this.attrs[k]=v;},
+    appendChild(n){if(n.tag==='#fragment')this.children.push(...n.children);else this.children.push(n);return n;},
+    set textContent(t){this.children=[];this.text=t;},
+    get textContent(){return (this.text||'')+this.children.map(n=>n.textContent).join('');},
+    querySelector(selector){return walk(this).find(n=>selector==='summary'?n.tag==='summary':n.className.split(' ').includes(selector.slice(1)));}};
+  node.textContent=text;
+  node.classList={add(...xs){node.className=[node.className,...xs].filter(Boolean).join(' ');}};
+  return node;
+}
+function walk(node){return node.children.flatMap(n=>[n,...walk(n)]);}
+const document={createTextNode:t=>el('#text','',t),createDocumentFragment:()=>el('#fragment')};
+const claimSentence=(c,t)=>el('span','claim-text running-text',t), claimFields=()=>['text'];
+const fieldCitations=c=>c.source_ids, quoteLanguages=()=>[], quoteLabel=()=> 'Quote', QUOTE_LABEL='Quote';
+const rereadTail=(node,s)=>{if(s.excerpts.length){node.appendChild(el('span','reread-tail','Source offline'));return true;}return false;};
+const archiveCopy=(node,s)=>{if(s.archive_url)node.appendChild(el('a','archive','archived copy'));};
+const sourceList=(ids,own)=>{const list=el('ol');list.ids=ids;list.sources=own;return list;};
+const S={other:{id:'other',publisher:'Other Publisher',title:'Other source',url:'https://example.org/other',published:'1999'},
+  bound:{id:'bound',publisher:'Bound Publisher',title:'Original title',title_en:'Source title',url:'https://example.org/bound',archive_url:'https://example.org/archive'},
+  later:{id:'later',publisher:'Later Publisher',title:'Later assignment',url:'https://example.org/later',published:'2025'}};
+const CLAIM_INDEX={a:{claim:{id:'a',basis:'activity',text:'It ran tests.',source_ids:['other','bound']},excerpts:[{source:S.bound,excerpt:{text:'Quote'}}]},
+  m:{claim:{id:'m',basis:'mandate',text:'It shall test.',source_ids:['other','bound']},excerpts:[{source:S.bound,excerpt:{text:'Task'}}]},
+  m2:{claim:{id:'m2',basis:'mandate'},excerpts:[{source:S.later,excerpt:{text:'Later task'}}]}};
+HELPERS
+for(const [published,label] of [['2024-11-20','Nov 2024'],['2024-11','Nov 2024'],['2024','2024'],[null,null]]) {
+  S.bound.published=published;
+  for(const id of ['a','m']) {
+    const entry=fnEntry(id), parts=entry.children.filter(n=>n.className==='meta-item').map(n=>n.children[0]);
+    assert.deepEqual(parts.map(n=>n.className),[...(label?['date-text fn-entry-date']:[]),'claim-text running-text','fn-sources']);
+    if(label)assert.equal(parts[0].textContent,label);
+    assert.equal(parts.at(-2).textContent,CLAIM_INDEX[id].claim.text);
+    assert.deepEqual(entry.children.map(n=>n.className),[...(label?['meta-item','sep-gap']:[]),'meta-item','sep-gap','meta-item','sep-gap','quote quote-inline']);
+    const links=walk(parts.at(-1)).filter(n=>n.className==='standalone');
+    assert.deepEqual(links.map(n=>[n.textContent,n.href,n.attrs['aria-label'],n.title]),[
+      ['Bound Publisher',S.bound.url,'Source title','Source title'],['Other Publisher',S.other.url,'Other source','Other source']]);
+    assert.equal(walk(entry).filter(n=>n.className==='reread-tail').length,1);
+    assert.equal(walk(entry).filter(n=>n.className==='archive').length,1);
+    const fold=entry.children.at(-1);
+    assert.equal(fold.tag,'details');assert.equal(fold.open,false);assert.equal(fold.dataset.quoteClaim,id);
+    assert.equal(fold.children.length,1);assert.equal(fold.children[0].textContent,'Quote');
+    assert.equal(fold.children[0].attrs['aria-label'],'Quote');
+  }
+  const task=fnTask({claim_ids:['m','m2','a']});
+  assert.equal(task.textContent,'Task given by Bound Publisher'+(label?', '+label:''));
+  assert.equal(task.children[0].href,S.bound.url);
+  assert.equal(fnTask({claim_ids:['a']}),null);
+}
+// Other claim/source callers keep their citation and list output without the entry option.
+const normal=claimBlock(CLAIM_INDEX.a.claim,()=>el('span','cites','1'));
+assert.equal(normal.children[0].textContent,'It ran tests.1');
+assert.equal(normal.children[1].className,'quote');
+const sources=fnSources(['other','bound'],'a');
+assert.equal(sources.tag,'ol');assert.deepEqual(sources.ids,['other','bound']);
+assert.equal(sources.sources.other.excerpts.length,0);assert.equal(sources.sources.bound.excerpts.length,1);
+""".replace('HELPERS', helpers)
+    result = subprocess.run(['node', '-'], input=script, text=True, capture_output=True)
+    assert result.returncode == 0, result.stderr
 
 
 @pytest.mark.parametrize(("old", "new", "finding"), [

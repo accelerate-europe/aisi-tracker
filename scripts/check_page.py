@@ -9984,7 +9984,7 @@ def chrome_session(chrome: str, dist: Path):
 
 
 # Functions table (Compare): independent oracles use the complete published data, never page claims' indices.
-FN_NAMES = {"activity": "Active", "mandate": "Assigned", "both": "Assigned and active",
+FN_NAMES = {"activity": "Active", "mandate": "Assigned", "both": "Active",
             "not_found": "not found", "not_coded": "not yet coded"}
 FN_STATUS_WORD = re.compile(r"\b(?:planned|proposed|exploring|announced)\b", re.I)
 
@@ -10152,8 +10152,8 @@ def functions_structure(html: str, data: dict) -> list[str]:
             need(("fn-group-start" in td.get("class", [])) == (n > 0 and vocab[code]["group"] != vocab[columns[n - 1]]["group"]), key + ": body group gap differs")
             button = td.select_one("button.fn-cell")
             if value in ("mandate", "activity", "both"):
-                since = f", since {function_month(expected['since'])}" if expected.get("since") else ""
-                need(button and button.get("type") == "button" and button.get("aria-label") == f"{place}, {vocab[code]['label']}: {FN_NAMES[value]}{since}"
+                since = f" since {function_month(expected['since'])}" if value in ("activity", "both") and expected.get("since") else ""
+                need(button and button.get("type") == "button" and button.get("aria-label") == f"{place}, {vocab[code]['label']}: {FN_NAMES[value].lower()}{since}"
                      and button.get("aria-expanded") == "false" and bool(button.get("aria-controls")), key + ": coded control/name differs")
             else:
                 need(not td.select("button") and td.get_text() == FN_NAMES[value] and td.select_one('.vh'), key + ": absent value must be unbuttoned and named")
@@ -10387,15 +10387,39 @@ const checkHeading = (detail, cell, country, institute, code, key) => {
   const identity=detail.querySelector('.fn-detail-head');
   need(!!identity?.id && detail.getAttribute('aria-labelledby') === identity.id, key + ': grid region lost its state and institute name');
   const said = context?.textContent || '', assigned = /\bassigned\b/i.test(said), active = /\bactive\b/i.test(said);
-  const states = {mandate: assigned && !active, activity: active && !assigned, both: active && assigned};
+  const states = {mandate: assigned && !active, activity: active && !assigned, both: active && !assigned};
   need((!(cell.value in states) || states[cell.value]) && said.includes(institute), key + ': grid status must name the institute short form');
-  if (cell.value === 'activity') need(/without an assignment/i.test(said), key + ': active-only status lacks the assignment caveat');
-  need(cell.since ? said.includes('active since ' + functionMonth(cell.since)) : !said.includes(' since '), key + ': grid status since differs');
+  need(!/without an assignment/i.test(said), key + ': status states an absence');
+  need(cell.since && cell.value !== 'mandate' ? said.includes('active since ' + functionMonth(cell.since)) : !said.includes(' since '), key + ': grid status since differs');
   need(context && (heading?.closest('.fn-detail-top') || heading)?.nextElementSibling === context &&
        context.nextElementSibling?.matches('.fn-claim, .fn-basis'), key + ': heading/context/claim order differs');
   const probe = document.createElement('span'); probe.style.cssText = 'font:var(--type-label);color:var(--muted)'; detail.appendChild(probe);
   if (context) need(['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'color'].every(k => getComputedStyle(context)[k] === getComputedStyle(probe)[k]), key + ': context is not muted list-level type');
   probe.remove();
+};
+const checkEntry = (item, q, key) => {
+  const sentence = item?.querySelector(':scope > .meta-item > .claim-text'), sources = item?.querySelector(':scope > .meta-item > .fn-sources');
+  const day = item?.querySelector(':scope > .meta-item > .fn-entry-date');
+  need(sentence?.textContent.replace(/\u00a0/g, ' ') === q.claim.text, key + ': claim text differs');
+  need(!sentence?.querySelector('.cites, a.cn'), key + ': a claim with publisher links still carries a citation number');
+  need(q.source.published ? day?.textContent.replace(/\u00a0/g, ' ') === functionMonth(q.source.published) : !day, key + ': entry date differs from its bound source');
+  const parts = [...item?.querySelectorAll(':scope > .meta-item') || []].map(n => n.firstElementChild);
+  need(JSON.stringify(parts.map(n => n?.className)) === JSON.stringify([...(q.source.published ? [day?.className] : []), sentence?.className, sources?.className]) &&
+       parts.every((n, index) => !index || n.parentElement.previousElementSibling?.matches('.sep-gap')), key + ': entry must read date, sentence, publishers with separators');
+  const links = [...sources?.querySelectorAll('[data-source-id] > a.standalone') || []];
+  const ids = [q.source.id, ...q.claim.source_ids.filter(id => id !== q.source.id)], cited = ids.map(id => data.sources.find(s => s.id === id));
+  need(JSON.stringify(links.map(a => a.href)) === JSON.stringify(cited.map(s => s.url)) && links.every((a, n) =>
+       a.target === '_blank' && a.textContent.replace(/\u00a0/g, ' ') === cited[n].publisher && a.getAttribute('aria-label') === (cited[n].title_en || cited[n].title)), key + ': claim publishers/links/titles/order differ');
+  const fold = item?.querySelector(':scope > details.quote'), summary = fold?.querySelector(':scope > summary');
+  need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === q.claim.id && fold === item.lastElementChild &&
+       summary.querySelector('.qualifier-text')?.textContent === 'Quote' && fold.previousElementSibling?.matches('.sep-gap') && fold.previousElementSibling.previousElementSibling === sources?.parentElement,
+       key + ': the quote control is not a closed, lazy Quote fold after the publishers separator');
+  if (item && sentence && sources) {
+    const probe = document.createElement('span'); probe.style.cssText = 'font:var(--type-meta);color:var(--muted)'; item.appendChild(probe);
+    need([sources, day, summary].filter(Boolean).every(n => ['fontSize', 'fontWeight', 'color'].every(k => getComputedStyle(n)[k] === getComputedStyle(probe)[k])), key + ': entry apparatus is not muted meta type');
+    probe.style.color = 'var(--ink)'; need(getComputedStyle(sentence).color === getComputedStyle(probe).color, key + ': entry sentence is not ink'); probe.remove();
+  }
+  return {sentence, sources, fold, summary};
 };
 const checkClaims = async (detail, cell, key) => {
   const items = [...detail.querySelectorAll('.fn-claim')];
@@ -10422,30 +10446,20 @@ const checkClaims = async (detail, cell, key) => {
   for (const id of cell.claim_ids) {
     const item = items.find(n => n.dataset.claim === id), q = quotes[id];
     if (!item || !q) { errors.push(key + ': claim missing ' + id); continue; }
-    const sentence = item.querySelector(':scope > .claim-text'), plain = sentence?.cloneNode(true);
-    plain?.querySelectorAll('.cites').forEach(n => n.remove());
-    need(plain?.textContent.replace(/\u00a0/g, ' ') === q.claim.text, key + ': claim text differs');
+    const {sources, fold, summary} = checkEntry(item, q, key);
     // A cell with both bases heads each block with a label before its first claim; a single basis has none (the status line says it).
     const mixed = new Set(cell.claim_ids.map(c => quotes[c]?.claim.basis)).size > 1, first = order.find(c => quotes[c]?.claim.basis === q.claim.basis) === id;
     const label = item.previousElementSibling?.matches('.fn-basis') ? item.previousElementSibling : null;
     need(mixed ? (first ? !!label && /^(assignment|activity)$/i.test(label.textContent) && (q.claim.basis === 'mandate') === /assignment/i.test(label.textContent) : !label) : !detail.querySelector('.fn-basis'),
          key + (mixed ? ': a block in a cell with both bases lacks its Assignment or Activity label' : ': a claim repeats the cell state'));
-    // Its source is written out just below, so the sentence carries no number (owner, 18 Nov 2026; principle: Citations).
-    need(!sentence?.querySelector('.cites, a.cn'), key + ': a claim whose source is written out below still carries a citation number');
-    // The shared Quote control ends the claim's source line, with translated languages in its accessible name.
-    const sources = item.querySelector(':scope > .fn-sources'), fold = sources?.querySelector('li > details.quote'), li = fold?.parentElement;
-    const summary = fold?.querySelector(':scope > summary'), name = summary?.getAttribute('aria-label') || '';
-    need(fold && !fold.open && !fold.querySelector('.quote-body') && fold.dataset.quoteClaim === id && fold === li.lastElementChild && summary.querySelector('.qualifier-text')?.textContent === 'Quote' && fold.previousElementSibling?.matches('.sep-gap'),
-         key + ': the quote control is not a closed, lazy Quote fold after the source separator');
-    if (summary && sources) need(['fontSize', 'fontWeight', 'color'].every(k => getComputedStyle(summary)[k] === getComputedStyle(sources)[k]), key + ': Quote differs from the source line type or muted ink');
+    const name = summary?.getAttribute('aria-label') || '';
     const glossed = [q.excerpt, ...(q.excerpt.anchors || [])].some(span => span.gloss);
     need(glossed ? name.startsWith('Quote, translated from ') && !/Bokmål|Nynorsk/.test(name) : name === 'Quote', key + ': the quote control is not named "Quote", with the translation once, in a plain language name');
-    need(sentence?.nextElementSibling === sources && sources === item.lastElementChild, key + ': sentence, then source line with its quote control, order differs');
     if (!fold) continue;
     await new Promise(resolve => { fold.addEventListener('toggle', resolve, {once:true}); fold.querySelector('summary').click(); });
     need(fold.open && fold.querySelector('.quote-body')?.getClientRects().length, key + ': Quote does not open to visible evidence');
     const body = fold.querySelector('.quote-body');
-    need(body && body.getBoundingClientRect().left > li.getBoundingClientRect().left + 4 && body.getBoundingClientRect().top >= summary.getBoundingClientRect().bottom - 1, key + ': the quote does not open beneath its source line, indented');
+    need(body && body.getBoundingClientRect().left > item.getBoundingClientRect().left + 4 && body.getBoundingClientRect().top >= summary.getBoundingClientRect().bottom - 1, key + ': the quote does not open beneath its entry, indented');
     need(glossed ? /^Translated from \S/.test(body?.querySelector(':scope > .quote-translation')?.textContent || '') : !body?.querySelector('.quote-translation'), key + ': an opened translated quote does not say what it was translated from');
     const block = item.querySelector('.quote-body > .quote-excerpt');
     need(item.querySelectorAll('.quote-excerpt').length === 1 && block?.dataset.sourceId === q.source.id, key + ': shared quote block differs');
@@ -10461,10 +10475,8 @@ const checkClaims = async (detail, cell, key) => {
     });
     need(!!block?.querySelector('.reread') === ['blocked_or_failed', 'source_gone', 'quote_gone'].includes(q.excerpt.reread?.state), key + ': a quote shows a re-read line only for a failed state');
     const reread = block?.querySelector('.reread');
-    if (reread && reread.classList.contains('failed')) need(getComputedStyle(reread).display === 'none' && sources.querySelector(`li[data-source-id="${q.source.id}"] > .reread-tail`)?.getClientRects().length, key + ': a source that could not be re-read does not say so at the end of its source line');
+    if (reread && reread.classList.contains('failed')) need(getComputedStyle(reread).display === 'none' && sources.querySelector(`[data-source-id="${q.source.id}"] > .reread-tail`)?.getClientRects().length, key + ': a source that could not be re-read does not say so after its publisher');
     else if (reread) need(getComputedStyle(reread).display === 'block' && getComputedStyle(reread).color === getComputedStyle(sources).color, key + ': per-quote re-read line is not separate/muted');
-    const links = [...item.querySelectorAll('.fn-sources > li > a.standalone')];
-    need(JSON.stringify(links.map(a => a.href)) === JSON.stringify(q.claim.source_ids.map(sid => data.sources.find(s => s.id === sid).url)) && links.every(a => a.target === '_blank'), key + ': claim sources/order differ');
   }
   errors.push(...claimIndentErrors(detail).map(error => key + ': ' + error));
 };
@@ -10725,27 +10737,36 @@ def check_functions_phone(browser, base_url: str, data: dict, widths=PHONE_WIDTH
                       const label = item.querySelector(':scope > .fn-function-label');
                       const name = label?.querySelector(':scope > .fn-name');
                       const marked = ['activity', 'mandate', 'both'].includes(f.value), labelKey = key + '/' + f.code;
-                      const since = f.since ? ' since ' + functionMonth(f.since) : '';
-                      const statusWord = f.value === 'activity' ? 'active' + since + ', without an assignment' : names[f.value].toLowerCase() + since;
+                      const since = f.since && ['activity', 'both'].includes(f.value) ? ' since ' + functionMonth(f.since) : '';
+                      const statusWord = names[f.value].toLowerCase() + since;
                       need(label && name && label.textContent === f.label + ' ' + statusWord && (label.tagName === 'BUTTON') === marked, labelKey + ': function label/control differs');
-                      const status = name?.querySelector(':scope > .fn-function-status'), summary = item.querySelector(':scope > .fn-function-summary');
+                      const status = name?.querySelector(':scope > .fn-function-status');
                       need(status && status.textContent === statusWord, labelKey + ': function status word differs');
-                      need(summary && summary.textContent === data.dataset.vocabularies.function[f.code].summary, labelKey + ': function summary differs');
-                      const newest = item.querySelector(':scope > .fn-function-newest'), latest = f.newest && quotes[f.newest];
-                      need(!!newest === !!f.newest, labelKey + ': newest entry presence differs');
+                      const newest = item.querySelector(':scope > .fn-latest'), latest = f.newest && quotes[f.newest];
+                      const task = item.querySelector(':scope > .fn-task'), mandate = f.claim_ids.map(id => quotes[id]).find(q => q.claim.basis === 'mandate');
+                      need(!!newest === !!latest && !!task === !!mandate, labelKey + ': latest entry/task presence differs');
+                      need(item.children.length === 1 + Number(!!latest) + Number(!!mandate), labelKey + ': function has extra preview lines');
                       if (latest) {
-                        const day = latest.source.published, text = 'Newest: ' + latest.claim.text + (day ? ' (' + functionMonth(day) + ')' : '');
-                        need(newest?.textContent === text && summary?.nextElementSibling === newest, labelKey + ': newest entry text/date/order differs');
-                        if (newest && summary) need(['fontSize', 'fontWeight', 'color'].every(k => getComputedStyle(newest)[k] === getComputedStyle(summary)[k]), labelKey + ': newest entry is not muted meta type');
+                        need(latest.claim.id === f.claim_ids.find(id => quotes[id].claim.basis === 'activity' && !quotes[id].claim.expired) && label?.nextElementSibling === newest, labelKey + ': latest preview is not the first live activity');
+                        checkEntry(newest, latest, labelKey + ': latest');
                       }
-                      need(label && status && label.nextElementSibling === summary && !label.querySelector('.fn-function-summary'), labelKey + ': function status must be inside the name and summary must follow the label outside its control');
+                      if (mandate) {
+                        const source = mandate.source, link = task?.querySelector('a');
+                        need(task?.textContent.replace(/\u00a0/g, ' ') === 'Task given by ' + source.publisher + (source.published ? ', ' + functionMonth(source.published) : '') &&
+                             (newest || label)?.nextElementSibling === task && link?.href === source.url && link?.target === '_blank' && link?.getAttribute('aria-label') === (source.title_en || source.title), labelKey + ': task text/source/order differs');
+                        const probe = document.createElement('span'); probe.style.cssText = 'font:var(--type-meta);color:var(--muted)'; item.appendChild(probe);
+                        if (task) need(['fontSize', 'fontWeight', 'color'].every(k => getComputedStyle(task)[k] === getComputedStyle(probe)[k]), labelKey + ': task is not muted meta type');
+                        probe.remove();
+                      }
+                      need([newest, task].filter(Boolean).every(n => !n.hidden && n.getClientRects().length), labelKey + ': preview lines must be visible before opening');
                       need(!marked || (status && !status.id && !label.hasAttribute('aria-describedby')), labelKey + ': function button must include its status');
                       pip(label?.querySelector('.fn-pip'), f.value, labelKey, true);
                       if (!marked || !label) continue;
                       need(label.getAttribute('aria-expanded') === 'false' && label.getAttribute('type') === 'button', labelKey + ': unopened function control differs');
                       label.click();
                       const claims = item.querySelector(':scope > .fn-phone-claims');
-                      need(claims && (item.querySelector(':scope > .fn-function-newest') || summary)?.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
+                      need(claims && (task || newest || label)?.nextElementSibling === claims && claims.id === label.getAttribute('aria-controls') && label.getAttribute('aria-expanded') === 'true', labelKey + ': function claims placement/state differs');
+                      need([newest, task].filter(Boolean).every(n => n.parentElement === item && n.hidden && !n.getClientRects().length), labelKey + ': preview lines must stay present but hidden while opened');
                       if (claims) {
                         checkHeading(claims, f, expected.country, null, f.code, labelKey);
                         const a = label.getBoundingClientRect(), s = status.getBoundingClientRect(), bar = getComputedStyle(label, '::after');
@@ -10757,6 +10778,7 @@ def check_functions_phone(browser, base_url: str, data: dict, widths=PHONE_WIDTH
                       overflow(labelKey);
                       label.click();
                       need(!item.querySelector('.fn-phone-claims') && label.getAttribute('aria-expanded') === 'false', labelKey + ': same function does not close claims');
+                      need([newest, task].filter(Boolean).every(n => n.parentElement === item && !n.hidden && n.getClientRects().length), labelKey + ': closing the function must restore its preview lines');
                     }
                     need(!/\b(planned|proposed|exploring|announced)\b/i.test([...detail.querySelectorAll('.fn-detail-head, h4, .fn-function-label')].map(n => n.textContent).join(' ')), key + ': status word in phone detail labels');
                     const escapeTarget = detail.querySelector('button.fn-function-label') || detail.querySelector('.close-control');
