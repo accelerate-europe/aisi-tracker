@@ -3131,7 +3131,8 @@
         "no-ai-law-consultation-2025-authorities",
         "no-government-ai-law-consultation",
         "eu-ai-act-authorities-2026",
-        "no-ki-holte-june"
+        "no-ki-holte-june",
+        "no-storting-budget-2027"
       ],
       "region": {
         "id": "150",
@@ -3152,7 +3153,8 @@
           "description": "The 2027 budget proposes extending KI Norge's mandate to AI safety and NOK 45.1m for KI Norge, including a NOK 30m increase to strengthen this work, with model evaluation alongside research institutions. It separately names KI Norge as the contact point for international safety communities, including AI Safety Institutes.",
           "source_ids": [
             "no-budget",
-            "no-prop1s-2026-27-dfd"
+            "no-prop1s-2026-27-dfd",
+            "no-storting-budget-2027"
           ],
           "short": "Budget proposes NOK 45.1m and an AI safety mandate for KI Norge.",
           "news": "The government proposes extending the institute's mandate to AI safety and giving it NOK 45.1m in total for 2027, including a NOK 30m increase for evaluating AI models and studying the risks of advanced AI."
@@ -29826,7 +29828,8 @@
         "gb-pq-38559-2026",
         "gb-pq-38577-2026",
         "gb-no-ai-statement-2026",
-        "gb-pq-43123-2026"
+        "gb-pq-43123-2026",
+        "gb-approach-2024"
       ],
       "people": [
         {
@@ -31990,6 +31993,16 @@
           ]
         },
         {
+          "id": "claims-ca2f125a5ce8458f9193d8f98573041b",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "Reproduced representative bias studies by running the same prompt set on newer and more varied open and closed image models, taking the first 12 samples from each model.",
+          "source_ids": [
+            "gb-approach-2024"
+          ]
+        },
+        {
           "id": "claims-be6f898fa4d84ab1950efd2f440e8ff4",
           "kind": "fact",
           "text": "AISI's blog says it funded Epoch AI to explore AI researchers' differing predictions on the automation of AI research and development.",
@@ -33441,7 +33454,8 @@
           "source_ids": [
             "no-prop1s-2026-27-dfd",
             "no-budget",
-            "r11-no-fiscal-year"
+            "r11-no-fiscal-year",
+            "no-storting-budget-2027"
           ],
           "confidence": "high",
           "commitment": "proposed",
@@ -33467,7 +33481,8 @@
           "source_ids": [
             "no-budget",
             "r11-no-fiscal-year",
-            "no-prop1s-2026-27-dfd"
+            "no-prop1s-2026-27-dfd",
+            "no-storting-budget-2027"
           ],
           "confidence": "high",
           "commitment": "proposed",
@@ -33644,7 +33659,8 @@
         "no-doffin-2026-116502",
         "no-gov-uk-ai-2026-11-12",
         "gb-no-ai-statement-2026",
-        "no-digdir-ki-norge-report-2025"
+        "no-digdir-ki-norge-report-2025",
+        "no-storting-budget-2027"
       ],
       "mandate_short": "Would add AI safety and model evaluation to KI Norge's remit.",
       "placement": {
@@ -34098,7 +34114,8 @@
         "eu-ai-office-tender-gpai-2025",
         "eu-tender-op-0032-specifications",
         "eu-politico-tudorache-2024",
-        "r5-eu-ai-act-article74"
+        "r5-eu-ai-act-article74",
+        "eu-virkkunen-dublin-2026"
       ],
       "staff": [
         {
@@ -34618,9 +34635,9 @@
           "kind": "function",
           "code": "regulatory_enforcement",
           "basis": "activity",
-          "text": "The Commission has started using its enforcement powers under the AI Act, with requests for information sent to several companies to check compliance with their obligations.",
+          "text": "Executive Vice-President Henna Virkkunen said that it has started enforcing the rules and sent requests for information on issues such as security, external evaluation and monitoring how models are used.",
           "source_ids": [
-            "eu-midday-briefing-2026-09-11"
+            "eu-virkkunen-dublin-2026"
           ]
         }
       ],
@@ -36112,9 +36129,19 @@
           "kind": "function",
           "code": "standards_guidance",
           "basis": "activity",
-          "text": "Released draft guidelines for developers on methods to anticipate, measure and mitigate misuse of AI models (NIST AI 800-1) in July 2024.",
+          "text": "Its guidelines on managing misuse risk for dual-use foundation models focus particularly on the models' initial developers.",
           "source_ids": [
-            "us-nist-caisi-overview-2026"
+            "catalogue-us-artifact-misuse1"
+          ]
+        },
+        {
+          "id": "claims-eebdbedcbe61439396c0fb3eeab0816e",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "activity",
+          "text": "Its voluntary key practices for incident readiness and response are primarily intended for organisations training or evaluating highly capable SI agents.",
+          "source_ids": [
+            "depth-us-incident-guidance"
           ]
         },
         {
@@ -38259,6 +38286,16 @@
           ]
         },
         {
+          "id": "claims-d7449addcd8e4971a25d705247bca93b",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "Compared GLM-5.3, GLM-5.2 and Claude Opus 4.8 on ExploitBench, a benchmark of 41 tasks based on known vulnerabilities in the V8 JavaScript engine.",
+          "source_ids": [
+            "jp-aisi-note-glm-2026"
+          ]
+        },
+        {
           "id": "claims-4d8b728d6a0d474c9fcd75fff53ee246",
           "kind": "function",
           "code": "evaluation_methods",
@@ -38286,6 +38323,26 @@
           "text": "Published a guide to evaluation perspectives that AI system developers and providers can refer to when conducting AI safety evaluations.",
           "source_ids": [
             "depth-jp-evaluation-guide"
+          ]
+        },
+        {
+          "id": "claims-51da25aec497413a981e5fa914f3ec40",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "activity",
+          "text": "Published a guide to evaluation perspectives on AI safety in the healthcare sector, aimed primarily at AI providers that develop LLM-based services and products in that sector.",
+          "source_ids": [
+            "catalogue-jp-9-6"
+          ]
+        },
+        {
+          "id": "claims-def510e6c0fd4488aa1ebf8a2420ab1a",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "activity",
+          "text": "Published a guide to safety evaluation perspectives for AI robotics, aimed mainly at stakeholders directly involved in developing, providing or operating AI robotics.",
+          "source_ids": [
+            "catalogue-jp-1-0"
           ]
         },
         {
@@ -38634,7 +38691,8 @@
         "kr-mt-2026-10-20",
         "kr-ai-safety-guardians-2026",
         "kr-forecast-5-2026",
-        "kr-sg-mou-2026"
+        "kr-sg-mou-2026",
+        "kr-forecast-1-2025"
       ],
       "people": [
         {
@@ -39163,6 +39221,16 @@
           ]
         },
         {
+          "id": "claims-45f21fb9282a4a79978a5ab75aab36c5",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "Evaluated two open-weight AI models and a variant of each with its refusal alignment removed, for harmfulness.",
+          "source_ids": [
+            "kr-uncensored-eval-2026"
+          ]
+        },
+        {
           "id": "claims-74b3c80e552d474097641a9ebac41d70",
           "kind": "function",
           "code": "research",
@@ -39200,6 +39268,16 @@
           "text": "Is to collect and analyse information on major domestic and international AI risks.",
           "source_ids": [
             "kr-policy-briefing-2024-10-18"
+          ]
+        },
+        {
+          "id": "claims-d84f602f33904c6bb9f35ad0279a4cab",
+          "kind": "function",
+          "code": "risk_monitoring",
+          "basis": "activity",
+          "text": "Its quarterly AI Safety Forecast Report extracted keywords and connections from 98 key news articles selected by PhD-level experts between May and July 2025.",
+          "source_ids": [
+            "kr-forecast-1-2025"
           ]
         }
       ]
@@ -67960,6 +68038,33 @@
               "institute_id"
             ]
           ]
+        },
+        {
+          "text": "AISI used the same prompt set with both newer and a wider variety of image models, including open and closed source, taking the first 12 samples from each model.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-ca2f125a5ce8458f9193d8f98573041b"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-25",
+          "anchors": [
+            {
+              "text": "Reproducing representative bias studies with image models",
+              "kind": "heading"
+            },
+            {
+              "text": "The AI Safety Institute (AISI)",
+              "kind": "definition"
+            }
+          ]
         }
       ],
       "origin": "GB",
@@ -72078,6 +72183,29 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "These voluntary key practices and recommended resources are primarily intended for organizations training or evaluating highly capable SI agents",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-eebdbedcbe61439396c0fb3eeab0816e"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-25",
+          "anchors": [
+            {
+              "text": "Key Practices for Incident Readiness and Response",
+              "kind": "heading"
+            }
+          ]
         }
       ],
       "origin": "US",
@@ -75286,6 +75414,31 @@
           ],
           "accessed": "2026-10-17",
           "gloss": "2026-07-23"
+        },
+        {
+          "text": "本書では、主に供給側を対象とし、その中で、特に AI ロボティクスの開発や提供・運用に直接携わるステークホルダーを主な読者としている。",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-def510e6c0fd4488aa1ebf8a2420ab1a"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-25",
+          "gloss": "This guide mainly addresses the supply side, and within it chiefly the stakeholders directly involved in developing, providing or operating AI robotics.",
+          "anchors": [
+            {
+              "text": "AIロボティクスに関するセーフティ評価観点ガイド",
+              "kind": "heading",
+              "gloss": "Guide to Safety Evaluation Perspectives for AI Robotics"
+            }
+          ]
         }
       ],
       "origin": "JP",
@@ -76115,6 +76268,29 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "This guide primarily targets AI providers that develop services and products using LLMs (text-based generative AI) in the healthcare sector.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-51da25aec497413a981e5fa914f3ec40"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-25",
+          "anchors": [
+            {
+              "text": "Guide to Evaluation Perspectives on AI Safety in the Healthcare Sector",
+              "kind": "heading"
+            }
+          ]
         }
       ],
       "origin": "JP",
@@ -77702,6 +77878,29 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "This document focuses particularly on foundation models’ initial developers, but actors across the lifecycle of a model all play a role in managing misuse risks.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-1ee896a2dc0d4c2fb4ecc1da3303bf29"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-25",
+          "anchors": [
+            {
+              "text": "Managing Misuse Risk for Dual-Use",
+              "kind": "heading"
+            }
+          ]
         }
       ],
       "origin": "US",
@@ -91905,29 +92104,6 @@
             ]
           ],
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "Guidelines on Managing Misuse Risk for AI Models (NIST AI 800-1) • Released draft guidelines for developers on methods to anticipate, measure, and mitigate misuse of AI models in July 2024.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "claims",
-              {
-                "id": "claims-1ee896a2dc0d4c2fb4ecc1da3303bf29"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-17",
-          "anchors": [
-            {
-              "text": "NIST Center for AI Standards and Innovation Overview",
-              "kind": "heading"
-            }
-          ]
         }
       ],
       "origin": "US",
@@ -119565,9 +119741,27 @@
               },
               "testing_capacity",
               "notes"
+            ],
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-45f21fb9282a4a79978a5ab75aab36c5"
+              },
+              "text"
             ]
           ],
-          "accessed": "2026-11-07"
+          "accessed": "2026-11-07",
+          "anchors": [
+            {
+              "text": "인공지능안전연구소, 거부 정렬 제거 AI 모델 유해성 평가 수행",
+              "kind": "heading",
+              "gloss": "AI Safety Institute carries out harmfulness evaluation of AI models with refusal alignment removed"
+            }
+          ]
         },
         {
           "text": "원본 모델과 거부 정렬 제거 모델에 동일한 평가 조건을 적용하여 유해 요청에 대한 응답 양상을 비교 평가하였습니다.",
@@ -119667,6 +119861,24 @@
             ]
           ],
           "accessed": "2026-11-07"
+        },
+        {
+          "text": "今回の評価には、AIによる攻撃コード開発能力を測るベンチマーク「ExploitBench」を使用しました。このベンチマークは、Webブラウザーなどで使われるJavaScriptエンジン「V8」の既知の脆弱性を題材とした41の課題で構成されています。比較には、GLM-5.3、GLM-5.2、Claude Opus 4.8の3つのAIモデルを用いました。",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "jp-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-d7449addcd8e4971a25d705247bca93b"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-25",
+          "gloss": "For this evaluation we used ExploitBench, a benchmark that measures AI ability to develop attack code. It consists of 41 tasks based on known vulnerabilities in V8, the JavaScript engine used in web browsers and elsewhere. Three AI models were compared: GLM-5.3, GLM-5.2 and Claude Opus 4.8."
         }
       ],
       "accessed": "2026-11-07",
@@ -123954,30 +124166,6 @@
               },
               "role"
             ]
-          ],
-          "accessed": "2026-11-10"
-        },
-        {
-          "text": "The AI Act is fully enforced. It's not just a set of rules on paper anymore. The Commission has enforcement powers. We have already started to use them with the RFIs that were sent to several companies to make sure that they comply with their obligations.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "claims",
-              {
-                "id": "claims-8dd06cb022f34a19bcf111cf0da4ba0a"
-              },
-              "text"
-            ]
-          ],
-          "anchors": [
-            {
-              "text": "The Commission shall have exclusive powers to supervise and enforce Chapter V, taking into account the procedural guarantees under Article 94. The Commission shall entrust the implementation of these tasks to the AI Office, without prejudice to the powers of organisation of the Commission and the division of competences between Member States and the Union based on the Treaties.",
-              "kind": "definition",
-              "source_id": "r5-eu-ai-act-article74"
-            }
           ],
           "accessed": "2026-11-10"
         }
@@ -129559,6 +129747,139 @@
         "retrieved": "2026-11-23T13:50:53Z",
         "sha256": "b2494b4d0b976cfa3201d36ef75fda1a844f183961f37e1e707aa566149a6443",
         "text_sha256": "d27c81eda5534b9ce43a09fdbd2b9cc7dfca3fdce4c36d3809e6cd37e3dc988d",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "eu-virkkunen-dublin-2026",
+      "url": "https://ec.europa.eu/commission/presscorner/api/files/document/print/en/speech_26_2150/SPEECH_26_2150_EN.pdf",
+      "title": "Speech by Executive Vice-President Virkkunen at the International AI Summit in Dublin",
+      "publisher": "European Commission",
+      "type": "primary",
+      "published": "2026-10-14",
+      "accessed": "2026-11-25",
+      "language": "en",
+      "origin": "EU",
+      "excerpts": [
+        {
+          "text": "Our AI Office has started enforcing these rules, and sent Requests for Information addressing issues such as security, external evaluation and monitoring how models are used.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "eu-ai-office"
+              },
+              "claims",
+              {
+                "id": "claims-8dd06cb022f34a19bcf111cf0da4ba0a"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-25"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-25T15:12:21Z",
+        "sha256": "9f22603377655aea49b9e3c98cfb0c4df8510a0d5a3aab9757ed940aee44d0e2",
+        "text_sha256": "d5dc9fec80e063a517d840fa887a11571bc38a46d53da7e43918c28fdd4ced52",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "no-storting-budget-2027",
+      "url": "https://www.stortinget.no/no/Saker-og-publikasjoner/Statsbudsjettet/statsbudsjettet-2027/",
+      "title": "Statsbudsjettet 2027",
+      "title_en": "The state budget for 2027",
+      "publisher": "Stortinget",
+      "type": "primary",
+      "accessed": "2026-11-25",
+      "language": "no",
+      "origin": "NO",
+      "excerpts": [
+        {
+          "text": "7. oktober la finansminister Jens Stoltenberg frem nasjonalbudsjettet og et forslag til Stortinget om statsbudsjett for 2027.",
+          "supports": [
+            [
+              "jurisdictions",
+              {
+                "id": "NO"
+              },
+              "timeline",
+              {
+                "id": "no-1"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-07dc8b2c007b4b80a356aef8e5afa53c"
+              },
+              "decision_date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "no-ki-norge"
+              },
+              "funding",
+              {
+                "id": "funding-0475119a71cc5e2099e293d3a48356b0"
+              },
+              "decision_date"
+            ]
+          ],
+          "accessed": "2026-11-25",
+          "gloss": "On 7 October the Minister of Finance, Jens Stoltenberg, presented the national budget and a proposal to the Storting for the state budget for 2027."
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-25T15:12:21Z",
+        "sha256": "602720022ffe541e7569881f4083bd25142ed6d6ffc9ccfe8cf809786c460cc6",
+        "text_sha256": "02603ee43345dff18ea3298738e705385c779928fff425e6adfdebe21788c46d",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "kr-forecast-1-2025",
+      "url": "https://www.aisi.re.kr/kor/article/ATCL75b4fb0a5/67",
+      "title": "K-AISI, AI 안전 글로벌 전환점 분석",
+      "title_en": "K-AISI Reports Global AI Safety Turning Point",
+      "publisher": "Korea AI Safety Institute",
+      "type": "primary",
+      "published": "2025-08-18",
+      "accessed": "2026-11-25",
+      "language": "ko",
+      "origin": "KR",
+      "excerpts": [
+        {
+          "text": "K-AISI's quarterly 'AI Safety Forecast Report' is a strategic analysis that examines global AI safety trends to project future scenarios. This report extracted 249 keywords and 970 connections from 98 key news articles selected by PhD-level experts between May-July 2025.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "kr-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-d84f602f33904c6bb9f35ad0279a4cab"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-25",
+          "gloss": "K-AISI's quarterly 'AI Safety Forecast Report' is a strategic analysis that examines global AI safety trends to project future scenarios. This report extracted 249 keywords and 970 connections from 98 key news articles selected by PhD-level experts between May-July 2025."
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-25T15:27:28Z",
+        "sha256": "b9f588c8e9badae379c1bee0b05f8dd9421a38734895825e6d782124a3407c64",
+        "text_sha256": "de4dd835e2f9f1566f53f677ab753f7747465f2de4c4bdd4bfe3fedf55c25ce0",
         "text_scheme": 1
       }
     }
