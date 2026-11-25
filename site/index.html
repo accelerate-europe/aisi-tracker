@@ -2000,6 +2000,12 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     });
     return ol;
   }
+  // The producer owns evidence and record selection; these helpers only read bindings.
+  function fieldCitations(record, fields) {
+    return fields.reduce(function (ids, field) {
+      return ids.concat(record && record.citations && record.citations[field] || []);
+    }, []).filter(function (id, index, ids) { return ids.indexOf(id) === index; });
+  }
   // The Form row names the host of a unit or university centre unless Reports to already names it (a federation shows its members instead).
   // Short form: the host text up to a "with" or "under" clause, with a name followed by its acronym in brackets read as the acronym:
   // "National Institute of Standards and Technology (NIST)" gives NIST, "Digital Trust Centre at Nanyang Technological University (NTU), with IMDA" gives "Digital Trust Centre at NTU".
@@ -2010,12 +2016,6 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     var rt = inst.reports_to || {}, parents = [rt.name, rt.name_en].filter(Boolean).join(";").toLowerCase().split(";");
     if (parents.some(function (p) { return p.trim() && p.indexOf(named) !== -1; })) return null;
     return h.replace(/[A-Z][\w-]*(?: (?:[A-Z][\w-]*|of|and|for|the))* \(([A-Z][A-Za-z]{1,7})\)/, "$1");
-  }
-  // The producer owns evidence and record selection; these helpers only read bindings.
-  function fieldCitations(record, fields) {
-    return fields.reduce(function (ids, field) {
-      return ids.concat(record && record.citations && record.citations[field] || []);
-    }, []).filter(function (id, index, ids) { return ids.indexOf(id) === index; });
   }
   // The Status row value names the status with its date, as the map record does: "Established since 21 Feb 2024".
   function statusSince(j) { var box = el("span", null, LABEL[j.status] + " since "); box.appendChild(dated(j.status_since)); return box; }
