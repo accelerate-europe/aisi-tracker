@@ -34538,7 +34538,7 @@
           "kind": "function",
           "code": "convening",
           "basis": "activity",
-          "text": "It says it oversees the AI Pact, which allows businesses to engage with the Commission and other stakeholders to share best practices and join activities.",
+          "text": "Oversees the AI Pact, which allows businesses to engage with the Commission and other stakeholders to share best practices and join activities.",
           "source_ids": [
             "eu-aioffice"
           ]
@@ -34568,7 +34568,7 @@
           "kind": "function",
           "code": "adoption",
           "basis": "activity",
-          "text": "It says the GenAI4EU initiative, one of those through which it supports innovators, contributes to novel use cases and emerging applications in 14 industrial sectors and the public sector.",
+          "text": "Supports innovators through the GenAI4EU initiative, which contributes to novel use cases and emerging applications in 14 industrial sectors and the public sector.",
           "source_ids": [
             "eu-aioffice"
           ]
