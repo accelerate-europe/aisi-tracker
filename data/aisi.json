@@ -34605,7 +34605,7 @@
           "kind": "function",
           "code": "standards_guidance",
           "basis": "activity",
-          "text": "Developed a draft template, put out for feedback, that sets out questions to guide deployers through the fundamental rights impact assessment.",
+          "text": "Developed a draft template that sets out questions to guide deployers through the fundamental rights impact assessment.",
           "source_ids": [
             "eu-fria-news-2026"
           ]
@@ -36139,9 +36139,9 @@
           "kind": "function",
           "code": "standards_guidance",
           "basis": "activity",
-          "text": "Its voluntary key practices for incident readiness and response are primarily intended for organisations training or evaluating highly capable SI agents.",
+          "text": "With the NSA and CISA, it published ten key practices for incident readiness and response in super intelligence training and evaluation.",
           "source_ids": [
-            "depth-us-incident-guidance"
+            "depth-us-incident-release"
           ]
         },
         {
@@ -36212,16 +36212,6 @@
           "text": "Chairs the TRAINS Taskforce, which includes representation from federal agencies.",
           "source_ids": [
             "us-trains"
-          ]
-        },
-        {
-          "id": "claims-9ee0b5e05f1847ce8e232191e3af0ad8",
-          "kind": "function",
-          "code": "adoption",
-          "basis": "mandate",
-          "text": "Is to support the diffusion and adoption of AI throughout the US economy.",
-          "source_ids": [
-            "us-nist-march-slides"
           ]
         },
         {
@@ -54394,6 +54384,12 @@
               },
               "text"
             ]
+          ],
+          "anchors": [
+            {
+              "text": "The recently established AI Safety Institute (AISI)",
+              "kind": "definition"
+            }
           ]
         },
         {
@@ -54438,7 +54434,13 @@
               "text"
             ]
           ],
-          "accessed": "2026-10-19"
+          "accessed": "2026-10-19",
+          "anchors": [
+            {
+              "text": "The recently established AI Safety Institute (AISI)",
+              "kind": "definition"
+            }
+          ]
         },
         {
           "text": "Provide adequate resources to the IndiaAI Safety Institute to conduct research, develop draft standards and their evaluation metrics and testing methods and benchmarks, collaborate with international bodies, national standard making bodies and provide technical guidance to regulators and industry.",
@@ -54487,6 +54489,10 @@
             {
               "text": "Key functions of the AISI are suggested as follows:",
               "kind": "heading"
+            },
+            {
+              "text": "The recently established AI Safety Institute (AISI)",
+              "kind": "definition"
             }
           ],
           "accessed": "2026-10-17"
@@ -72183,29 +72189,6 @@
             ]
           ],
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "These voluntary key practices and recommended resources are primarily intended for organizations training or evaluating highly capable SI agents",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "claims",
-              {
-                "id": "claims-eebdbedcbe61439396c0fb3eeab0816e"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-11-25",
-          "anchors": [
-            {
-              "text": "Key Practices for Incident Readiness and Response",
-              "kind": "heading"
-            }
-          ]
         }
       ],
       "origin": "US",
@@ -72318,7 +72301,24 @@
                 "id": "us-2026-10-03-named"
               },
               "description"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-eebdbedcbe61439396c0fb3eeab0816e"
+              },
+              "text"
             ]
+          ],
+          "anchors": [
+            {
+              "text": "Key Practices for Incident Readiness and Response in Super Intelligence Training and Evaluation",
+              "kind": "heading"
+            }
           ]
         }
       ],
@@ -105836,29 +105836,6 @@
             ]
           ],
           "accessed": "2026-11-09"
-        },
-        {
-          "text": "Support the diffusion and adoption of AI throughout the U.S. economy",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "us-caissi"
-              },
-              "claims",
-              {
-                "id": "claims-9ee0b5e05f1847ce8e232191e3af0ad8"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-20",
-          "anchors": [
-            {
-              "text": "NIST CAISI Introduction",
-              "kind": "heading"
-            }
-          ]
         }
       ],
       "snapshot": {
@@ -116549,7 +116526,15 @@
                 "id": "agreements-a2e6c97f5f3457b0b4e0ee60a952d502"
               },
               "participation"
-            ],
+            ]
+          ],
+          "accessed": "2026-10-24",
+          "gloss": "signed a memorandum of understanding with the Singapore AI Safety Institute to strengthen cooperation centred on AI safety evaluation"
+        },
+        {
+          "text": "한국 인공지능안전연구소(Korea AI Safety Institute, ETRI 산하)는 싱가포르 인공지능안전연구소와 인공지능(AI) 안전 평가를 중심으로 한 협력 강화를 위한 양해각서(MoU)를 체결하고",
+          "gloss": "The Korea AI Safety Institute (under ETRI) signed a memorandum of understanding (MoU) with the Singapore AI Safety Institute to strengthen cooperation centred on AI safety evaluation",
+          "supports": [
             [
               "institutes",
               {
@@ -116562,8 +116547,7 @@
               "text"
             ]
           ],
-          "accessed": "2026-10-24",
-          "gloss": "signed a memorandum of understanding with the Singapore AI Safety Institute to strengthen cooperation centred on AI safety evaluation"
+          "accessed": "2026-11-25"
         }
       ],
       "snapshot": {
