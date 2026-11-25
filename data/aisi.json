@@ -4,8 +4,8 @@
     "title": "AI Security Institutes tracker",
     "description": "Which states have an AI Security Institute (AISI), covering all 193 UN member states plus Taiwan and the EU AI Office, with funding, staff and leadership where published. Every record cites its sources.",
     "definition": "We count a body as an AI Security Institute (AISI) if a national government or an international organisation, such as the EU, has tasked it with testing general-purpose or frontier AI models for their capabilities and risks, or has named it its AI safety institute or its AI security institute. Being a regulator, certification body or cyber security agency is not enough on its own.",
-    "version": "1.1.4-dev",
-    "as_of": "2026-11-24",
+    "version": "1.2.0",
+    "as_of": "2026-11-25",
     "license": "CC BY 4.0",
     "license_note": "Quotations from sources remain with their rights holders and are reproduced as quotations; the licence covers our own compilation, text and data.",
     "publisher": "Accelerate Europe",
@@ -18,7 +18,7 @@
     ],
     "contact": "contact@accelerate-europe.org",
     "repository": "https://github.com/accelerate-europe/aisi-tracker",
-    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.1.3, data as of 24 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
+    "citation": "Accelerate Europe (2026). AI Security Institutes tracker, version 1.2.0, data as of 25 November 2026. Compiled by Jason Hoelscher-Obermaier. https://doi.org/10.5281/zenodo.23600431",
     "doi": "10.5281/zenodo.23600431",
     "scope": "Status is tracked for all 193 UN member states, Taiwan (as a territory) and the EU AI Office. The Europe page counts the 27 EU member states, Iceland, Liechtenstein, Norway, the United Kingdom and Switzerland.",
     "method": [
@@ -129891,6 +129891,24 @@
         "130 sentences reworded. A sentence now says what the institute does or was tasked with, and the source mark shows who published it. It names a speaker only where someone other than the publisher speaks, and starts with \"It says\" where an institute describes its work only in general terms.",
         "Downloads and API: each institute's `functions` rows and `functions.csv` gain `since` and `newest`. In `claim_ids`, assignments come first, then examples, newest first.",
         "Sources: publication dates added for six sources, each taken from the source itself. 1,303 sources in total, none added."
+      ]
+    },
+    {
+      "date": "2026-11-25",
+      "version": "1.2.0",
+      "summary": "Function entries that did not meet the function's test were removed or replaced for 11 institutes, and nine tasks now read not found. France, Canada, Japan and South Korea gain international cooperation entries from the network's joint multilingual testing.",
+      "changes": [
+        "Functions: 25 entries that did not meet their function's test were removed, for Australia, the EU AI Office, France, Germany, Japan, Malaysia, Norway, Singapore, South Korea, the United Kingdom and the United States: examples that did not show the institute doing the work, and assignments that rested on a plan item, a power rather than a task, the institute's own plans or another actor. One French example, a judge prompt designed for the network's joint agentic testing, now counts as evaluation methods instead of model testing.",
+        "Functions: nine tasks now read \"not found\": the United Kingdom's support for regulators; Germany's adoption, evaluation methods and research; the EU AI Office's regulatory sandbox; Japan's incident role; South Korea's adoption; and Malaysia's evaluation methods and certification.",
+        "Functions: 12 functions now read assigned, no longer active, because no remaining example shows the work: Australia (support for regulators, risk monitoring), the EU AI Office (risk monitoring), France (convening, support for regulators, research), Malaysia (incident role, risk monitoring), Norway (adoption), Singapore (research), South Korea (convening) and the United Kingdom (risk monitoring). Japan's convening keeps its example and no longer reads assigned.",
+        "Functions: France, Canada, Japan and South Korea gain international cooperation entries from their own sections of the network's report on joint multilingual testing; each now reads active since at least June 2025. France also gains a model testing example. The United States now reads active for standards and guidelines, from its draft guidelines for developers on managing misuse risk (NIST AI 800-1, July 2024), and its adoption example is now its work with the General Services Administration on federal procurement (since March 2026).",
+        "Functions: seven entries reworded to say what the source shows: the United Kingdom's alignment evaluation, the French judge prompt, the EU AI Office's AI Pact and GenAI4EU, now plain statements, South Korea's AI Safety Forecast Report, Australia's risk monitoring task (\"is to\" instead of \"is being set up to\"), and Malaysia's risk monitoring task, which now names the Ministry of Digital as publisher of the national AI action plan.",
+        "Method: a function reads active only where a source shows the institute's own work on it: a named piece of work or programme, or work the source reports as done. A statement of what an institute is for, focuses on or plans to do is at most an assigned task. The download schema and the API text say so.",
+        "United Kingdom: Pawan Mudigonda is added as Research Director, from the institute's About page of 24 November 2026. Jade Leung's note adds that she is Security Adviser to the AI Taskforce and was the Prime Minister's AI Adviser. The staffing description drops the employer pension figure, which the job advert no longer states.",
+        "Canada: the testing note now says that Canada tested two models in the network's joint multilingual testing; the joint agentic testing credits it with analysis.",
+        "Sources: a source that is offline now links to its archived copy wherever the page cites it; downloads and the API keep the source's own address. South Korea's AI Basic Act, Article 12, now links to a working address. A Norwegian source is now titled by what it is, Digdir's annual report for 2025. 1,303 sources, none added.",
+        "Downloads and API: an output can now carry `functions`, the codes of the functions it shows, judged on its source. 32 of 136 outputs carry it so far; an output without it is not yet judged. The new field is listed in `dataset.provisional`, so it may still change in a minor release.",
+        "Singapore: the network's best-practice document on automated evaluation is no longer listed among its outputs; the institute hosts it, and no source says it contributed. 136 outputs in total."
       ]
     }
   ]
