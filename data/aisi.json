@@ -32570,16 +32570,6 @@
           ]
         },
         {
-          "id": "claims-91e30a4b24de4d5d9dd7a04c977ffa90",
-          "kind": "function",
-          "code": "convening",
-          "basis": "activity",
-          "text": "Brings together ANSSI, Inria, the national metrology and testing laboratory (LNE) and PEReN.",
-          "source_ids": [
-            "fr-commission-ia-report-2026"
-          ]
-        },
-        {
           "id": "claims-4db48655ee52407d90628660b344d8c0",
           "kind": "function",
           "code": "international_cooperation",
@@ -33050,16 +33040,6 @@
           "text": "Is to act as the central interface for analysing and countering the new security risks that rapid progress in AI brings.",
           "source_ids": [
             "de-breg"
-          ]
-        },
-        {
-          "id": "claims-052a02daf87c4e56abaeee7aa05e2958",
-          "kind": "function",
-          "code": "adoption",
-          "basis": "activity",
-          "text": "Has again pointed out that the BSI strongly recommends using AI for vulnerability searches and software quality assurance.",
-          "source_ids": [
-            "de-bsi-ki-themen-2026-10"
           ]
         },
         {
@@ -39624,9 +39604,7 @@
             "institute_id": "sg-aisi",
             "date": "2026-07-23"
           },
-          "shows": [
-            "evaluation_methods"
-          ]
+          "shows": []
         }
       ],
       "head": {
@@ -40546,7 +40524,7 @@
           "kind": "function",
           "code": "risk_monitoring",
           "basis": "mandate",
-          "text": "Is being set up to monitor, test and share information on emerging AI capabilities, risks and harms.",
+          "text": "Is to monitor, test and share information on emerging AI capabilities, risks and harms.",
           "source_ids": [
             "au-plan"
           ]
@@ -40935,7 +40913,7 @@
           "kind": "function",
           "code": "risk_monitoring",
           "basis": "mandate",
-          "text": "AI Malaysia's national action plan calls for a national AI Trust Function to evaluate, monitor, anticipate and respond to AI risks, and its overview says MY-AISafe delivers that function.",
+          "text": "The Ministry of Digital's national AI action plan calls for a national AI Trust Function to evaluate, monitor, anticipate and respond to AI risks, and AI Malaysia's overview says MY-AISafe delivers that function.",
           "source_ids": [
             "my-plan-2026"
           ]
@@ -120507,24 +120485,6 @@
             ]
           ],
           "accessed": "2026-11-07"
-        },
-        {
-          "text": "Aus gegebenem Anlass wird vom AISI Deutschland erneut darauf hingewiesen, dass Schwachstellen-Suche und Software-QS mittels KI seitens des BSI dringend empfohlen wird.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "de-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-052a02daf87c4e56abaeee7aa05e2958"
-              },
-              "text"
-            ]
-          ],
-          "gloss": "Prompted by recent events, AISI Deutschland points out again that the BSI urgently recommends vulnerability searching and software quality assurance by means of AI.",
-          "accessed": "2026-11-07"
         }
       ],
       "accessed": "2026-11-07",
@@ -125636,24 +125596,6 @@
           ],
           "gloss": "through lasting funding and recruitment of experts",
           "accessed": "2026-11-10"
-        },
-        {
-          "text": "Confier au SGDSN le pilotage de l'élaboration d'un protocole de crise dédié aux menaces informationnelles par IA, associant l'INE SIA, qui fédère l'ANSSI, l'Inria, le Laboratoire national de métrologie et d’essais (LNE) et le Pôle d'Expertise de la Régulation Numérique (PEReN)",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "fr-inesia"
-              },
-              "claims",
-              {
-                "id": "claims-91e30a4b24de4d5d9dd7a04c977ffa90"
-              },
-              "text"
-            ]
-          ],
-          "gloss": "Entrust the SGDSN with leading the drawing up of a crisis protocol dedicated to AI information threats, involving INESIA, which brings together ANSSI, Inria, the National Laboratory of Metrology and Testing (LNE) and the Digital Regulation Expertise Centre (PEReN)",
-          "accessed": "2026-11-10"
         }
       ],
       "snapshot": {
@@ -127507,8 +127449,8 @@
     {
       "id": "no-digdir-ki-norge-report-2025",
       "url": "https://www.digdir.no/media/6966/download",
-      "title": "Rapportering på oppdrag om KI Norge",
-      "title_en": "Report on the KI Norge assignment",
+      "title": "Årsrapport 2025",
+      "title_en": "Annual report 2025",
       "publisher": "Digitaliseringsdirektoratet (Digdir)",
       "type": "primary",
       "published": "2026-03-13",
