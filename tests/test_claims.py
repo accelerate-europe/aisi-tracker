@@ -369,7 +369,7 @@ def test_real_vocabulary_is_the_spec_list():
 
 
 HELD_VOCABULARY = {code: {**VOCABULARY["research"], "label": code} for code in
-                   ("model_testing", "evaluation_methods", "standards_guidance", "international_cooperation", "research")}
+                   ("model_testing", "evaluation_methods", "standards_guidance", "international_cooperation", "research", "risk_monitoring")}
 
 
 def held_row(code: str, held: dict, entry_day: str = "2025-06") -> dict:
@@ -407,7 +407,19 @@ def test_older_signed_agreement_withholds_cooperation_since():
     assert held_row("model_testing", agreement())["since"] == "2025-06"
 
 
-def test_reports_and_uncredited_outputs_never_withhold_since():
+@pytest.mark.parametrize("output, code, since", [
+    ({"type": "joint_testing", "functions": []}, "model_testing", "2025-06"),  # judged to show nothing: no hold
+    ({"type": "joint_testing", "functions": ["international_cooperation"]}, "model_testing", "2025-06"),
+    ({"type": "joint_testing", "functions": ["international_cooperation"]}, "international_cooperation", None),
+    ({"type": "report", "functions": ["risk_monitoring"]}, "risk_monitoring", None),  # a judged report holds
+    ({"type": "evaluation"}, "model_testing", None),  # unreviewed: its type
+])
+def test_reviewed_output_withholds_since_by_its_judgement(output, code, since):
+    held = {"outputs": [{**output, "date": "2024-11-20", "credit": {"institute_id": "x", "date": "2024-11-20"}}]}
+    assert held_row(code, held)["since"] == since
+
+
+def test_unreviewed_reports_and_uncredited_outputs_never_withhold_since():
     report = {"outputs": [{"type": "report", "date": "2020", "credit": {"institute_id": "x", "date": "2020"}}]}
     uncredited = {"outputs": [{"type": "joint_testing", "date": "2020"}]}
     assert held_row("research", report)["since"] == "2025-06"

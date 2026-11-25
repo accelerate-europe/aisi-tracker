@@ -49,10 +49,12 @@ def current_codes(vocabularies: dict) -> list[str]:
     ]
 
 
-# Held work that shows a function without being a claim: a credited output of these types, or a signed agreement
-# with a counterparty other than a developer. A function's since is withheld while such work predates its earliest
-# entry, so the page never dates work later than the record shows it. Reports are left out: their type does not say
-# which function they show (research, monitoring, foresight or advice), so only a quoted entry can.
+# Held work that shows a function without being a claim: a credited output whose reviewed `functions` list the
+# function, an unreviewed credited output of these types, or a signed agreement with a counterparty other than a
+# developer. A function's since is withheld while such work predates its earliest entry, so the page never dates work
+# later than the record shows it. An unreviewed report is left out: its type does not say which function it shows
+# (research, monitoring, foresight or advice), so only a judgement or a quoted entry can. The gap report reads
+# outputs the same way (function_gaps.py).
 OUTPUT_FUNCTIONS = {
     "joint_testing": ("model_testing", "international_cooperation"),
     "evaluation": ("model_testing",),
@@ -70,12 +72,17 @@ def earlier(day: str, other: str) -> bool:
 
 
 def held_work_dates(institute: dict) -> dict[str, list[str]]:
-    """Dates of credited outputs and signed non-developer agreements, by the function they show."""
+    """Dates of credited outputs and signed non-developer agreements, by the function they show.
+
+    A reviewed output (one with `functions`, even empty) shows exactly its judged codes; an unreviewed one falls
+    back to its type.
+    """
     held: dict[str, list[str]] = {}
     for output in institute.get("outputs", []):
         day = (output.get("credit") or {}).get("date") or output.get("date")
         if output.get("credit") and day:
-            for code in OUTPUT_FUNCTIONS.get(output.get("type"), ()):
+            codes = output["functions"] if "functions" in output else OUTPUT_FUNCTIONS.get(output.get("type"), ())
+            for code in codes:
                 held.setdefault(code, []).append(day)
     for agreement in institute.get("agreements", []):
         if agreement.get("state") == "signed" and agreement.get("counterparty_type") != "developer" and agreement.get("date"):

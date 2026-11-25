@@ -175,14 +175,16 @@ def test_authored_and_published_bindings_match_without_mutation(fragment):
     assert resolved == materialise_references(before)
 
 
-@pytest.mark.parametrize("judgement", [{}, {"functions": ["research"]}])
-def test_report_research_fallback_never_changes_since_rule(fragment, judgement):
+@pytest.mark.parametrize("judgement, held, since", [({}, {}, "2025-01"), ({"functions": ["research"]}, {"research": ["2024-02"]}, None)])
+def test_report_research_fallback_never_changes_since_rule_but_a_judgement_does(fragment, judgement, held, since):
+    # The gap report's type fallback for an unreviewed report never withholds since; a reviewed judgement does,
+    # as the since rule and the gap report read outputs the same way.
     institute, = fragment["institutes"]
     institute["outputs"] = [output(**judgement)]
     assert "report" not in claim_checks.OUTPUT_FUNCTIONS
-    assert claim_checks.held_work_dates(institute) == {}
+    assert claim_checks.held_work_dates(institute) == held
     rows = claim_checks.function_rows(institute, fragment["dataset"]["vocabularies"], {CLAIM: {"published": "2025-01"}})
-    assert next(row for row in rows if row["code"] == "research")["since"] == "2025-01"
+    assert next(row for row in rows if row["code"] == "research")["since"] == since
 
 
 @pytest.mark.parametrize("code", ["unknown", "retired"])
