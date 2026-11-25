@@ -2,7 +2,7 @@
 
 Research for the dataset runs as dedicated passes. A pass is one research session, or a session and its subagents, with its own folder in the private store and a pass file that states who ran it, with which harness and models, when, what kind of pass it is and its scope. During a pass the agent searches, reads and writes findings; it does not edit the repository. Data changes follow in a separate session whose commits name the pass.
 
-Every output a pass adds answers "which function does it show" in `outputs[].shows`, judged on its bound text against the [function tests](design/claims-1.1.md#2-code-lists-proposals).
+Every output a pass adds answers "which function does it show" in `outputs[].functions`, judged on its bound text against the [function tests](design/claims-1.1.md#2-code-lists-proposals).
 
 A function entry for an institute follows the same tests, the rule on activity entries in the same section and the [staff question](design/claims-1.1.md#5-checks) of its review. Where a pass finds no work that an activity entry needs, it reports the nearest miss as a `rejected` finding, and the miss is not coded.
 

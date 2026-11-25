@@ -31,7 +31,7 @@ def lead(dataset):
     d["dataset"]["exchange_rates"] = []
     d["dataset"]["vocabularies"]["function"] = copy.deepcopy(VOCABULARY)
     d["dataset"]["vocabularies"]["development"] = copy.deepcopy(DEVELOPMENTS)
-    d["dataset"]["provisional"] = ["institutes[].functions", "institutes[].outputs[].shows", "vocabularies.function", "vocabularies.development"]
+    d["dataset"]["provisional"] = ["institutes[].functions", "institutes[].outputs[].functions", "vocabularies.function", "vocabularies.development"]
     state = d["jurisdictions"][0]
     state.update(
         status="none_identified", status_confidence="low", institute_id=None, timeline=[],

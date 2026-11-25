@@ -75,12 +75,12 @@ def test_unreviewed_type_fallback(fragment, kind, expected):
     assert all(detail["review"] == "unreviewed" for row in report["shown_without_entry"] for detail in row["outputs"])
 
 
-@pytest.mark.parametrize("shows", [[], ["evaluation_methods"], ["evaluation_methods", "model_testing"]])
-def test_reviewed_judgement_replaces_type_including_empty(fragment, shows):
+@pytest.mark.parametrize("functions", [[], ["evaluation_methods"], ["evaluation_methods", "model_testing"]])
+def test_reviewed_judgement_replaces_type_including_empty(fragment, functions):
     institute, = fragment["institutes"]
-    institute["outputs"] = [output(shows=shows)]
+    institute["outputs"] = [output(functions=functions)]
     report = gaps.function_gaps(fragment)
-    assert {row["code"] for row in report["shown_without_entry"]} == set(shows)
+    assert {row["code"] for row in report["shown_without_entry"]} == set(functions)
     assert report["counts"]["reviewed"] == 1
     assert report["counts"]["unreviewed"] == 0
     assert report["counts"]["entry_not_shown"] == 1
@@ -101,7 +101,7 @@ def test_only_live_activity_suppresses_direction_one(fragment, entry, expected):
 def test_groups_outputs_once_per_institute_and_code(fragment):
     institute, = fragment["institutes"]
     institute["claims"][0]["basis"] = "mandate"
-    institute["outputs"] = [output(date="2025", lineage="later", shows=["research"]), output()]
+    institute["outputs"] = [output(date="2025", lineage="later", functions=["research"]), output()]
     report = gaps.function_gaps(fragment)
     row, = report["shown_without_entry"]
     assert row["institute_id"] == "test"
@@ -111,7 +111,7 @@ def test_groups_outputs_once_per_institute_and_code(fragment):
     assert report["counts"]["credited_outputs"] == 2
 
 
-@pytest.mark.parametrize("judgement, expected", [({}, 0), ({"shows": []}, 1), ({"shows": ["model_testing"]}, 1), ({"shows": ["research"]}, 0)])
+@pytest.mark.parametrize("judgement, expected", [({}, 0), ({"functions": []}, 1), ({"functions": ["model_testing"]}, 1), ({"functions": ["research"]}, 0)])
 def test_direction_two_requires_reviewed_output_omitting_code(fragment, judgement, expected):
     institute, = fragment["institutes"]
     institute["outputs"] = [output(**judgement)]
@@ -120,7 +120,7 @@ def test_direction_two_requires_reviewed_output_omitting_code(fragment, judgemen
 
 def test_direction_two_uses_only_source_bound_to_text(fragment):
     institute, = fragment["institutes"]
-    institute["outputs"] = [output(shows=[], source_ids=["listed-only"])]
+    institute["outputs"] = [output(functions=[], source_ids=["listed-only"])]
     # A binding to another leaf is not the text's source either.
     fragment["sources"][1]["excerpts"] = [{"text": "Other citation.", "supports": [
         ["institutes", {"id": "test"}, "claims", {"id": CLAIM}, "source_ids"],
@@ -134,31 +134,31 @@ def test_direction_two_uses_only_source_bound_to_text(fragment):
 @pytest.mark.parametrize("changes", [{"expired": True}, {"basis": "mandate"}])
 def test_direction_two_excludes_expired_and_mandate_entries(fragment, changes):
     institute, = fragment["institutes"]
-    institute["outputs"] = [output(shows=[])]
+    institute["outputs"] = [output(functions=[])]
     institute["claims"] = [claim(**changes)]
     assert gaps.function_gaps(fragment)["entry_not_shown"] == []
 
 
 def test_direction_two_groups_disagreements_but_keeps_each_output_judgement(fragment):
     institute, = fragment["institutes"]
-    institute["outputs"] = [output(lineage="b", shows=[]), output(lineage="a", shows=["model_testing"])]
+    institute["outputs"] = [output(lineage="b", functions=[]), output(lineage="a", functions=["model_testing"])]
     report = gaps.function_gaps(fragment)
     row, = report["entry_not_shown"]
     assert [o["lineage"] for o in row["outputs"]] == ["a", "b"]
     assert report["counts"]["entry_not_shown"] == 1
 
 
-@pytest.mark.parametrize("other", [{"shows": ["research"]}, {}])
+@pytest.mark.parametrize("other", [{"functions": ["research"]}, {}])
 def test_direction_two_shared_source_needs_every_citing_output_judged_against_the_code(fragment, other):
     # A source backing several outputs is not a disagreement while one of them shows the code or is unjudged.
     institute, = fragment["institutes"]
-    institute["outputs"] = [output(lineage="judged", shows=[]), output(lineage="other", **other)]
+    institute["outputs"] = [output(lineage="judged", functions=[]), output(lineage="other", **other)]
     assert gaps.function_gaps(fragment)["entry_not_shown"] == []
 
 
 def test_uncredited_outputs_are_excluded_from_both_directions_and_counts(fragment):
     institute, = fragment["institutes"]
-    institute["outputs"] = [output(shows=["model_testing"]), output(lineage="unreviewed")]
+    institute["outputs"] = [output(functions=["model_testing"]), output(lineage="unreviewed")]
     for item in institute["outputs"]:
         item.pop("credit")
     report = gaps.function_gaps(fragment)
@@ -167,7 +167,7 @@ def test_uncredited_outputs_are_excluded_from_both_directions_and_counts(fragmen
 
 def test_authored_and_published_bindings_match_without_mutation(fragment):
     institute, = fragment["institutes"]
-    institute["outputs"] = [output(shows=["model_testing"])]
+    institute["outputs"] = [output(functions=["model_testing"])]
     before = copy.deepcopy(fragment)
     resolved = materialise_references(fragment)
     assert gaps.function_gaps(fragment) == gaps.function_gaps(resolved)
@@ -175,7 +175,7 @@ def test_authored_and_published_bindings_match_without_mutation(fragment):
     assert resolved == materialise_references(before)
 
 
-@pytest.mark.parametrize("judgement", [{}, {"shows": ["research"]}])
+@pytest.mark.parametrize("judgement", [{}, {"functions": ["research"]}])
 def test_report_research_fallback_never_changes_since_rule(fragment, judgement):
     institute, = fragment["institutes"]
     institute["outputs"] = [output(**judgement)]
@@ -189,16 +189,16 @@ def test_report_research_fallback_never_changes_since_rule(fragment, judgement):
 def test_validation_rejects_unknown_and_retired_output_codes(fragment, code):
     fragment["dataset"]["vocabularies"]["function"]["retired"] = {"deprecated": True, "replaced_by": ["research"]}
     institute, = fragment["institutes"]
-    institute["outputs"] = [output(shows=[code])]
+    institute["outputs"] = [output(functions=[code])]
     assert claim_checks.check_claims(materialise_references(fragment)) == [
-        f"test output research-report: shows code '{code}' is not a current function code"
+        f"test output research-report: functions lists '{code}', which is not a current function code"
     ]
 
 
-@pytest.mark.parametrize("judgement, valid", [({}, True), ({"shows": []}, True), ({"shows": ["research"]}, True),
-                                             ({"shows": ["research", "research"]}, False), ({"shows": "research"}, False),
-                                             ({"shows": [1]}, False), ({"shows": None}, False)])
-def test_shows_schema_allows_optional_unique_strings_in_authored_and_download(judgement, valid):
+@pytest.mark.parametrize("judgement, valid", [({}, True), ({"functions": []}, True), ({"functions": ["research"]}, True),
+                                             ({"functions": ["research", "research"]}, False), ({"functions": "research"}, False),
+                                             ({"functions": [1]}, False), ({"functions": None}, False)])
+def test_functions_schema_allows_optional_unique_strings_in_authored_and_download(judgement, valid):
     download = json.loads((ROOT / "schema/aisi.schema.json").read_text())
     for schema in (download, authored_schema(download, strict=True)):
         node = schema["properties"]["institutes"]["items"]["properties"]["outputs"]["items"]
@@ -208,14 +208,14 @@ def test_shows_schema_allows_optional_unique_strings_in_authored_and_download(ju
 
 def test_provisional_path_and_published_judgement(dataset):
     real = json.loads((ROOT / "data/aisi.json").read_text())
-    assert "institutes[].outputs[].shows" in real["dataset"]["provisional"]
-    assert claim_checks.schema_node("institutes[].outputs[].shows")
+    assert "institutes[].outputs[].functions" in real["dataset"]["provisional"]
+    assert claim_checks.schema_node("institutes[].outputs[].functions")
     institute, = dataset["institutes"]
-    institute["outputs"][0]["shows"] = ["research"]
+    institute["outputs"][0]["functions"] = ["research"]
     dataset["dataset"]["vocabularies"]["function"] = copy.deepcopy(VOCABULARY)
     assert claim_checks.check_claims(dataset) == []
     published = build.export_dataset(dataset)
-    assert published["institutes"][0]["outputs"][0]["shows"] == ["research"]
+    assert published["institutes"][0]["outputs"][0]["functions"] == ["research"]
 
 
 @pytest.mark.parametrize("as_json", [False, True])
@@ -240,7 +240,7 @@ def test_cli_publishes_before_reporting(fragment, monkeypatch, tmp_path, capsys,
 
 
 def test_warning_lines_never_fail_validation_or_check_report(fragment, dataset, monkeypatch, tmp_path, capsys):
-    fragment["institutes"][0]["outputs"] = [output(shows=["model_testing"])]
+    fragment["institutes"][0]["outputs"] = [output(functions=["model_testing"])]
     report = gaps.function_gaps(fragment)
     lines = gaps.report_lines(report)
     assert report["counts"]["shown_without_entry"] == report["counts"]["entry_not_shown"] == 1

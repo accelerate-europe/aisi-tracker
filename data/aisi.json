@@ -532,7 +532,7 @@
     },
     "provisional": [
       "institutes[].functions",
-      "institutes[].outputs[].shows",
+      "institutes[].outputs[].functions",
       "vocabularies.function",
       "vocabularies.development"
     ],
@@ -30271,7 +30271,7 @@
             "institute_id": "gb-aisi",
             "date": "2024-05-17"
           },
-          "shows": [
+          "functions": [
             "research"
           ]
         },
@@ -30292,7 +30292,7 @@
             "institute_id": "gb-aisi",
             "date": "2024-05-20"
           },
-          "shows": [
+          "functions": [
             "model_testing"
           ]
         },
@@ -30387,7 +30387,7 @@
             "institute_id": "gb-aisi",
             "date": "2024-11-19"
           },
-          "shows": [
+          "functions": [
             "model_testing",
             "international_cooperation"
           ]
@@ -31131,7 +31131,7 @@
             "institute_id": "gb-aisi",
             "date": "2026-07-23"
           },
-          "shows": [
+          "functions": [
             "model_testing",
             "international_cooperation"
           ]
@@ -31173,7 +31173,7 @@
             "institute_id": "gb-aisi",
             "date": "2026-08-27"
           },
-          "shows": [
+          "functions": [
             "evaluation_methods"
           ]
         },
@@ -31194,7 +31194,7 @@
             "institute_id": "gb-aisi",
             "date": "2026-09-28"
           },
-          "shows": [
+          "functions": [
             "model_testing"
           ]
         },
@@ -31268,7 +31268,7 @@
             "institute_id": "gb-aisi",
             "date": "2026-10-26"
           },
-          "shows": [
+          "functions": [
             "research"
           ]
         },
@@ -32235,7 +32235,7 @@
             "institute_id": "fr-inesia",
             "date": "2025-06-26"
           },
-          "shows": [
+          "functions": [
             "international_cooperation"
           ]
         },
@@ -32276,7 +32276,7 @@
             "institute_id": "fr-inesia",
             "date": "2026-02-12"
           },
-          "shows": []
+          "functions": []
         },
         {
           "title": "What should evaluators prioritise when resources are limited?",
@@ -32296,7 +32296,7 @@
             "institute_id": "fr-inesia",
             "date": "2026-07-08"
           },
-          "shows": [
+          "functions": [
             "evaluation_methods",
             "international_cooperation"
           ]
@@ -34170,7 +34170,7 @@
             "institute_id": "eu-ai-office",
             "date": "2025-07-17"
           },
-          "shows": [
+          "functions": [
             "model_testing",
             "international_cooperation"
           ]
@@ -34191,7 +34191,7 @@
             "institute_id": "eu-ai-office",
             "date": "2026-10-21"
           },
-          "shows": []
+          "functions": []
         },
         {
           "date": "2026-11-16",
@@ -34210,7 +34210,7 @@
             "institute_id": "eu-ai-office",
             "date": "2026-11-16"
           },
-          "shows": [
+          "functions": [
             "standards_guidance"
           ]
         }
@@ -35219,7 +35219,7 @@
             "institute_id": "us-caissi",
             "date": "2024-11-19"
           },
-          "shows": [
+          "functions": [
             "model_testing",
             "international_cooperation"
           ]
@@ -35276,7 +35276,7 @@
             "institute_id": "us-caissi",
             "date": "2025-01-17"
           },
-          "shows": [
+          "functions": [
             "evaluation_methods"
           ]
         },
@@ -35439,7 +35439,7 @@
             "institute_id": "us-caissi",
             "date": "2026-09-17"
           },
-          "shows": [
+          "functions": [
             "model_testing"
           ]
         },
@@ -35460,7 +35460,7 @@
             "institute_id": "us-caissi",
             "date": "2026-10-16"
           },
-          "shows": [
+          "functions": [
             "standards_guidance"
           ]
         },
@@ -35480,7 +35480,7 @@
             "institute_id": "us-caissi",
             "date": "2025-12-02"
           },
-          "shows": [
+          "functions": [
             "research"
           ]
         },
@@ -35517,7 +35517,7 @@
             "institute_id": "us-caissi",
             "date": "2026-03-23"
           },
-          "shows": [
+          "functions": [
             "research"
           ]
         }
@@ -36661,7 +36661,7 @@
             "institute_id": "ca-caisi",
             "date": "2025-06-26"
           },
-          "shows": [
+          "functions": [
             "model_testing",
             "international_cooperation"
           ]
@@ -36721,7 +36721,7 @@
             "institute_id": "ca-caisi",
             "date": "2026-07-08"
           },
-          "shows": [
+          "functions": [
             "evaluation_methods"
           ]
         }
@@ -37605,7 +37605,7 @@
             "institute_id": "jp-aisi",
             "date": "2025-06-26"
           },
-          "shows": [
+          "functions": [
             "model_testing",
             "international_cooperation"
           ]
@@ -38763,7 +38763,7 @@
             "institute_id": "kr-aisi",
             "date": "2025-06-26"
           },
-          "shows": [
+          "functions": [
             "international_cooperation"
           ]
         },
@@ -38806,7 +38806,7 @@
             "institute_id": "kr-aisi",
             "date": "2026-01-19"
           },
-          "shows": [
+          "functions": [
             "model_testing",
             "international_cooperation"
           ]
@@ -38827,7 +38827,7 @@
             "institute_id": "kr-aisi",
             "date": "2026-09-03"
           },
-          "shows": [
+          "functions": [
             "risk_monitoring",
             "foresight"
           ]
@@ -38866,7 +38866,7 @@
             "institute_id": "kr-aisi",
             "date": "2026-10-02"
           },
-          "shows": [
+          "functions": [
             "risk_monitoring"
           ]
         }
@@ -39457,7 +39457,7 @@
             "institute_id": "sg-aisi",
             "date": "2024-11-20"
           },
-          "shows": [
+          "functions": [
             "model_testing",
             "international_cooperation"
           ]
@@ -39523,7 +39523,7 @@
             "institute_id": "sg-aisi",
             "date": "2026-01-19"
           },
-          "shows": [
+          "functions": [
             "model_testing",
             "international_cooperation"
           ]
@@ -39545,7 +39545,7 @@
             "institute_id": "sg-aisi",
             "date": "2026-07-08"
           },
-          "shows": [
+          "functions": [
             "evaluation_methods"
           ]
         }
@@ -40115,7 +40115,7 @@
             "institute_id": "au-aisi",
             "date": "2026-07-24"
           },
-          "shows": [
+          "functions": [
             "international_cooperation"
           ]
         },
@@ -41396,7 +41396,7 @@
             "institute_id": "ke-ai-safety-institute",
             "date": "2025-06-26"
           },
-          "shows": [
+          "functions": [
             "international_cooperation"
           ]
         },
@@ -41420,7 +41420,7 @@
             "institute_id": "ke-ai-safety-institute",
             "date": "2025-07-17"
           },
-          "shows": [
+          "functions": [
             "international_cooperation",
             "evaluation_methods"
           ]

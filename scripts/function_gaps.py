@@ -26,7 +26,7 @@ def output_detail(output: dict) -> dict:
         "date": output["date"],
         "title": output["title"],
         "lineage": output["lineage"],
-        "review": "reviewed" if "shows" in output else "unreviewed",
+        "review": "reviewed" if "functions" in output else "unreviewed",
     }
 
 
@@ -61,10 +61,10 @@ def function_gaps(published_or_authored_data: dict) -> dict:
         live_codes = {c["code"] for c in live}
         shown: dict[str, list[dict]] = {}
         for output in outputs:
-            reviewed = "shows" in output
+            reviewed = "functions" in output
             counts["credited_outputs"] += 1
             counts["reviewed" if reviewed else "unreviewed"] += 1
-            codes = output["shows"] if reviewed else UNREVIEWED_FUNCTIONS.get(output["type"], ())
+            codes = output["functions"] if reviewed else UNREVIEWED_FUNCTIONS.get(output["type"], ())
             for code in codes:
                 if code not in live_codes:
                     shown.setdefault(code, []).append(output_detail(output))
@@ -80,9 +80,9 @@ def function_gaps(published_or_authored_data: dict) -> dict:
             # A source such as a briefing note may back several outputs: flag only when every output it backs
             # has been judged and none shows the entry's function.
             citing = [output for output in outputs if source_id in output["source_ids"]]
-            judged = bool(citing) and all("shows" in output for output in citing)
+            judged = bool(citing) and all("functions" in output for output in citing)
             disagreeing = [output_detail(output) for output in citing] if judged and not any(
-                claim["code"] in output["shows"] for output in citing) else []
+                claim["code"] in output["functions"] for output in citing) else []
             if disagreeing:
                 entry_not_shown.append({
                     "institute_id": institute["id"], "code": claim["code"], "claim_id": claim["id"],

@@ -252,10 +252,10 @@ def check_claims(d: dict) -> list[str]:
         for n, record in enumerate(d[collection]):
             if collection == "institutes":
                 for output in record.get("outputs", []):
-                    for code in output.get("shows", []):
+                    for code in output.get("functions", []):
                         if code not in current:
                             errors.append(
-                                f"{record['id']} output {output['lineage']}: shows code {code!r} is not a current function code"
+                                f"{record['id']} output {output['lineage']}: functions lists {code!r}, which is not a current function code"
                             )
             closest = record.get("closest_body", {}) if collection == "jurisdictions" else {}
             closest_id = closest.get("body_id")

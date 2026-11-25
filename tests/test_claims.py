@@ -43,7 +43,7 @@ def claimed(dataset):
     """Two function claims and a fact on the institute, a body role and a fact on the state, each bound once."""
     d = copy.deepcopy(dataset)
     d["dataset"]["vocabularies"]["function"] = copy.deepcopy(VOCABULARY)
-    d["dataset"]["provisional"] = ["institutes[].functions", "institutes[].outputs[].shows", "vocabularies.function"]
+    d["dataset"]["provisional"] = ["institutes[].functions", "institutes[].outputs[].functions", "vocabularies.function"]
     institute, state = d["institutes"][0], d["jurisdictions"][0]
     institute["claims"] = [
         {"id": TESTING, "kind": "function", "code": "model_testing", "basis": "activity",

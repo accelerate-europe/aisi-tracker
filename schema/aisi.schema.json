@@ -1999,7 +1999,7 @@
                   "type": "string",
                   "description": "Title of the published artefact."
                 },
-                "shows": {
+                "functions": {
                   "type": "array",
                   "uniqueItems": true,
                   "items": {
