@@ -70,7 +70,7 @@ def test_unreviewed_type_fallback(fragment, kind, expected):
     assert {row["code"] for row in report["shown_without_entry"]} == expected
     assert report["counts"] == {
         "credited_outputs": 1, "reviewed": 0, "unreviewed": 1,
-        "shown_without_entry": len(expected), "entry_not_shown": 0,
+        "shown_without_entry": len(expected), "entry_not_shown": 0, "agreement_without_entry": 0,
     }
     assert all(detail["review"] == "unreviewed" for row in report["shown_without_entry"] for detail in row["outputs"])
 
@@ -270,6 +270,52 @@ def test_warning_lines_never_fail_validation_or_check_report(fragment, dataset, 
     ctx = check.Context(tmp_path, tmp_path, tmp_path, tmp_path / "check-report", "HEAD", False, tmp_path / "dist", tmp_path / "cache")
     assert check.step_validate(ctx).status == "PASS"
     assert all(line in ctx.sections["warnings"] for line in lines)
+
+
+def agreement(**changes):
+    return {"id": "agreements-a", "counterparty_type": "government", "counterparty": "A foreign government",
+            "state": "signed", "date": "2026-11-12", **changes}
+
+
+@pytest.mark.parametrize("changes, entry, expected", [
+    ({}, None, 1),
+    ({"counterparty_type": "institute"}, None, 1),
+    ({"counterparty_type": "developer"}, None, 0),
+    ({"counterparty_type": "multilateral"}, None, 0),
+    ({"state": "announced"}, None, 0),
+    ({}, claim(code="international_cooperation"), 0),
+    ({}, claim(code="international_cooperation", basis="mandate"), 1),
+    ({}, claim(code="international_cooperation", expired=True), 1),
+    ({}, claim(), 1),
+])
+def test_signed_agreement_without_cooperation_activity(fragment, changes, entry, expected):
+    institute, = fragment["institutes"]
+    institute["outputs"] = []
+    institute["agreements"] = [agreement(**changes)]
+    institute["claims"] = [entry] if entry else []
+    if entry is None:
+        fragment["sources"] = []
+    report = gaps.function_gaps(fragment)
+    assert report["counts"]["agreement_without_entry"] == expected
+    assert [row["institute_id"] for row in report["agreement_without_entry"]] == ["test"] * expected
+    lines = gaps.report_lines(report)
+    # With no credited output the report still speaks when an agreement is unmatched, and only then.
+    assert len(lines) == (2 if expected else 0)
+    if expected:
+        assert lines[1] == ("function gaps: test international_cooperation: signed agreement without an activity entry; "
+                            "2026-11-12 A foreign government (agreements-a)")
+
+
+def test_signed_agreements_listed_once_in_date_order(fragment):
+    institute, = fragment["institutes"]
+    institute["agreements"] = [agreement(id="agreements-b"), agreement(id="agreements-c", date="2025-01-01"),
+                               agreement(id="agreements-d", state="announced")]
+    report = gaps.function_gaps(fragment)
+    row, = report["agreement_without_entry"]
+    assert [a["id"] for a in row["agreements"]] == ["agreements-c", "agreements-b"]
+    # The count is of institutes, however many agreements each holds.
+    assert report["counts"]["agreement_without_entry"] == 1
+    assert gaps.report_lines(report)[0].endswith("; 1 institutes with a signed agreement but no cooperation entry")
 
 
 def test_no_credited_output_means_no_warning_lines(fragment):
