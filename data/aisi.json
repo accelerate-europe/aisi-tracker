@@ -32577,7 +32577,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "activity",
-          "text": "Published a blog post on evaluators' priorities as part of the evaluation work of the International Network for Advanced AI Measurement, Evaluation and Science.",
+          "text": "Published a blog post on evaluators' priorities in the context of the evaluation work of the International Network for Advanced AI Measurement, Evaluation and Science.",
           "source_ids": [
             "fix-output-fr-inesia-evaluation-prioritisation-guidance"
           ]
@@ -32587,7 +32587,7 @@
           "kind": "function",
           "code": "international_cooperation",
           "basis": "mandate",
-          "text": "France and Germany have agreed to step up their cooperation on AI safety and security through future collaboration between INESIA and its German counterpart.",
+          "text": "Is to collaborate with its German counterpart on AI safety and security, under an agreement between France and Germany.",
           "source_ids": [
             "depth-de-fr-cooperation"
           ]
@@ -36988,16 +36988,6 @@
           ]
         },
         {
-          "id": "claims-9b1b78c24b4848fabf57585f7135b4c2",
-          "kind": "function",
-          "code": "talent",
-          "basis": "activity",
-          "text": "It says that, through CIFAR, it funds high-risk, high-reward projects and prioritises support for emerging and student researchers to build the next generation of AI safety experts.",
-          "source_ids": [
-            "ca-caisi-srsr-briefing"
-          ]
-        },
-        {
           "id": "claims-5725067e50384146bf7e45737230a3f5",
           "kind": "function",
           "code": "evaluation_methods",
@@ -37011,8 +37001,8 @@
           "id": "claims-4443e68d347e4141a9158269d10c0846",
           "kind": "function",
           "code": "research",
-          "basis": "mandate",
-          "text": "Its project provides a non-repayable contribution to CIFAR to deliver the institute's applied and investigator-led research stream.",
+          "basis": "activity",
+          "text": "Provides a non-repayable contribution to CIFAR to deliver the institute's applied and investigator-led research stream.",
           "source_ids": [
             "ca-ised-dp-2025-26-tpp"
           ]
@@ -38260,7 +38250,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "The AI Basic Plan says the institute needs further strengthening and lists active evaluation of high-performance AI to deter events that threaten national security among the work to advance.",
+          "text": "Under the AI Basic Plan, it needs further strengthening, and active evaluation of high-performance AI to deter events that threaten national security is among the work to be advanced together.",
           "source_ids": [
             "jp-ai-basic-plan-2026"
           ]
@@ -38300,7 +38290,7 @@
           "kind": "function",
           "code": "research",
           "basis": "activity",
-          "text": "Commissioned the 'Report on the Specific Influence on AI Safety', with NRI SecureTechnologies as research contractor.",
+          "text": "Its research report investigates how deployed AI systems interact with elements of society and what influence they may have on the real world.",
           "source_ids": [
             "catalogue-jp-12-1"
           ]
@@ -38876,7 +38866,6 @@
             "date": "2026-09-03"
           },
           "functions": [
-            "risk_monitoring",
             "foresight"
           ]
         },
@@ -39111,16 +39100,6 @@
           ]
         },
         {
-          "id": "claims-dac88e4331254b3a97fae1b30b26307a",
-          "kind": "function",
-          "code": "risk_monitoring",
-          "basis": "activity",
-          "text": "Published the fifth edition of its quarterly AI Safety Forecast Report.",
-          "source_ids": [
-            "kr-forecast-5-2026"
-          ]
-        },
-        {
           "id": "claims-ed8058c1644f417082b52de32b614c91",
           "kind": "function",
           "code": "foresight",
@@ -39263,9 +39242,9 @@
         {
           "id": "claims-d84f602f33904c6bb9f35ad0279a4cab",
           "kind": "function",
-          "code": "risk_monitoring",
+          "code": "foresight",
           "basis": "activity",
-          "text": "Its quarterly AI Safety Forecast Report extracted keywords and connections from 98 key news articles selected by PhD-level experts between May and July 2025.",
+          "text": "Its quarterly AI Safety Forecast Report projects future scenarios from 249 keywords and 970 connections extracted from 98 key news articles selected by PhD-level experts between May and July 2025.",
           "source_ids": [
             "kr-forecast-1-2025"
           ]
@@ -41313,16 +41292,6 @@
           "text": "Its suggested functions include conducting forecasting research on the potential impact of AI and issues in online safety, privacy, data governance, labour and competition.",
           "source_ids": [
             "in-guidelines-2025"
-          ]
-        },
-        {
-          "id": "claims-c54df1f437614225a8a4b707b5132de0",
-          "kind": "function",
-          "code": "research",
-          "basis": "mandate",
-          "text": "Was established to advance science-based and indigenous research on AI governance and approaches to AI safety relevant to the developing world.",
-          "source_ids": [
-            "in-indiaai-partners-2025"
           ]
         }
       ]
@@ -55000,17 +54969,6 @@
         {
           "text": "As part of the Safe & Trusted AI pillar of the IndiaAI Mission, the IndiaAI Safety Institute has been established to advance science-based and indigenous research on AI governance, pioneering innovative approaches to AI safety that are relevant to the developing world.",
           "supports": [
-            [
-              "institutes",
-              {
-                "id": "in-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-c54df1f437614225a8a4b707b5132de0"
-              },
-              "text"
-            ],
             [
               "jurisdictions",
               {
@@ -76609,7 +76567,19 @@
               },
               "credit",
               "institute_id"
-            ],
+            ]
+          ]
+        },
+        {
+          "text": "this research investigates how AI and AI systems that have been implemented interact with elements in society and what kind of influence they may have on the real world.",
+          "url": "https://aisi.go.jp/assets/pdf/20251031_en.pdf",
+          "anchors": [
+            {
+              "text": "Background and Purpose of the Research",
+              "kind": "heading"
+            }
+          ],
+          "supports": [
             [
               "institutes",
               {
@@ -76621,7 +76591,8 @@
               },
               "text"
             ]
-          ]
+          ],
+          "accessed": "2026-11-25"
         }
       ],
       "origin": "JP",
@@ -87850,23 +87821,6 @@
             ]
           ],
           "accessed": "2026-10-21"
-        },
-        {
-          "text": "The Canadian AI Safety Institute, through CIFAR, funds high-risk, high-reward projects and prioritizes support for emerging and student researchers to build the next generation of AI safety experts",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "ca-caisi"
-              },
-              "claims",
-              {
-                "id": "claims-9b1b78c24b4848fabf57585f7135b4c2"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-17"
         }
       ],
       "access_note": "Official briefing for the 2 February 2026 appearance. HTML dcterms.issued is empty; Date modified and dcterms.date both say 2026-07-28. The appearance date is not treated as a publication date.",
@@ -116630,24 +116584,6 @@
           ],
           "accessed": "2026-10-24",
           "gloss": "Posted 2026-09-03 23:06:09"
-        },
-        {
-          "text": "Korea AISI publishes the fifth edition of its quarterly AI Safety Forecast Report.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-dac88e4331254b3a97fae1b30b26307a"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-24",
-          "gloss": "Korea AISI publishes the fifth edition of its quarterly AI Safety Forecast Report."
         },
         {
           "text": "인공지능안전연구소(Korea AISI)가 'AI 안전 전망 보고서(AI Safety Forecast Report)' 제5호를 발간합니다. 이번 호는 2026년 5~7월 주요 뉴스 보도를 대상으로 가중도, 고유벡터, 매개 중심성 분석을 수행하고, 전문가 그룹이 정책·거버넌스, 산업·기술, 지정학의 세 축을 교차 분석하여 미래 시나리오를 설계했습니다.",
