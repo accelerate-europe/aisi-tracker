@@ -32504,7 +32504,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "mandate",
-          "text": "Is to develop evaluation methods suited to the cybersecurity of systems and products that integrate AI.",
+          "text": "It says it is to develop evaluation methods suited to the cybersecurity of systems and products that integrate AI.",
           "source_ids": [
             "fr-sgdsn-aisi"
           ]
@@ -32534,7 +32534,7 @@
           "kind": "function",
           "code": "research",
           "basis": "mandate",
-          "text": "Is to conduct research to better understand, characterise and control systemic risks and to inform public decision-making.",
+          "text": "It says it is to conduct research to better understand, characterise and control systemic risks and to inform public decision-making.",
           "source_ids": [
             "fr-sgdsn-aisi"
           ]
@@ -32544,7 +32544,7 @@
           "kind": "function",
           "code": "regulatory_support",
           "basis": "mandate",
-          "text": "Is to help implement the AI regulatory framework effectively.",
+          "text": "It says it is to help implement the AI regulatory framework effectively.",
           "source_ids": [
             "fr-sgdsn-aisi"
           ]
@@ -32987,7 +32987,7 @@
           "kind": "function",
           "code": "risk_monitoring",
           "basis": "mandate",
-          "text": "Its core tasks include international technology watch and situation analysis.",
+          "text": "It says its core tasks include international technology watch and situation analysis.",
           "source_ids": [
             "de-bsi-aisi"
           ]
@@ -33007,7 +33007,7 @@
           "kind": "function",
           "code": "policy_advice",
           "basis": "mandate",
-          "text": "Its core tasks include strategic advice to the federal government on AI-related security and sovereignty questions.",
+          "text": "It says its core tasks include strategic advice to the federal government on AI-related security and sovereignty questions.",
           "source_ids": [
             "de-bsi-aisi"
           ]
@@ -40437,7 +40437,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "Has a goal of analysing and testing new AI models and applications.",
+          "text": "It says it has a goal of analysing and testing new AI models and applications.",
           "source_ids": [
             "au-industry"
           ]
@@ -40457,7 +40457,7 @@
           "kind": "function",
           "code": "regulatory_support",
           "basis": "mandate",
-          "text": "Has a goal of supporting regulators and agencies in responding to emerging AI capabilities, risks and harms.",
+          "text": "It says it has a goal of supporting regulators and agencies in responding to emerging AI capabilities, risks and harms.",
           "source_ids": [
             "au-industry"
           ]
