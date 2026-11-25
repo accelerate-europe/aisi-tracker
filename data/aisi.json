@@ -34528,7 +34528,7 @@
           "kind": "function",
           "code": "certification",
           "basis": "mandate",
-          "text": "Is tasked with conformity assessments and tests of AI systems referred to in paragraph 1 of the quoted article that are classified as high-risk and subject to third-party conformity assessment.",
+          "text": "Is tasked with conformity assessments and tests of AI systems referred to in Article 74(1) of the AI Act that are classified as high-risk and subject to third-party conformity assessment.",
           "source_ids": [
             "r5-eu-ai-act-article74"
           ]
@@ -34578,7 +34578,7 @@
           "kind": "function",
           "code": "standards_guidance",
           "basis": "mandate",
-          "text": "Is tasked with developing a questionnaire template, including through an automated tool, to help deployers comply more easily with their obligations under the quoted article.",
+          "text": "Is tasked with developing a questionnaire template, including through an automated tool, to help deployers comply more easily with their obligations under Article 27 of the AI Act.",
           "source_ids": [
             "r5-eu-ai-act-article74"
           ]
@@ -36915,7 +36915,7 @@
           "kind": "function",
           "code": "model_testing",
           "basis": "mandate",
-          "text": "Canada's national AI strategy commits $50 million to expand its capabilities to conduct transparent evaluations of AI models.",
+          "text": "Canada will invest $50 million to expand the institute's capabilities to conduct transparent evaluations of AI models.",
           "source_ids": [
             "r5-ca-ai-for-all"
           ]
@@ -36935,7 +36935,7 @@
           "kind": "function",
           "code": "risk_monitoring",
           "basis": "mandate",
-          "text": "Canada's national AI strategy commits $50 million to expand its capabilities to track emerging AI risks.",
+          "text": "Canada will invest $50 million to expand the institute's capabilities to track emerging AI risks.",
           "source_ids": [
             "r5-ca-ai-for-all"
           ]
@@ -36975,7 +36975,7 @@
           "kind": "function",
           "code": "talent",
           "basis": "activity",
-          "text": "ISED's briefing says that, through CIFAR, it funds high-risk, high-reward projects and prioritises support for emerging and student researchers to build the next generation of AI safety experts.",
+          "text": "It says that, through CIFAR, it funds high-risk, high-reward projects and prioritises support for emerging and student researchers to build the next generation of AI safety experts.",
           "source_ids": [
             "ca-caisi-srsr-briefing"
           ]
@@ -40507,7 +40507,7 @@
           "kind": "function",
           "code": "policy_advice",
           "basis": "activity",
-          "text": "The Australian AI Safety Institute told a parliamentary committee that it is providing technical information services to support the digital duty of care legislation as it is being developed.",
+          "text": "Its General Manager, Dr Kate Conroy, told a parliamentary committee that it is providing technical information services to support the digital duty of care legislation as it is being developed.",
           "source_ids": [
             "au-jsc-ai-2026-09-18"
           ]
@@ -40836,7 +40836,7 @@
           "kind": "function",
           "code": "policy_advice",
           "basis": "mandate",
-          "text": "The Dewan Rakyat record says the government set it up, through the Ministry of Digital and AI Malaysia Berhad, to study clear mechanisms for regulating the use of AI in organisations across sectors.",
+          "text": "The Minister of Digital, Gobind Singh Deo, told the Dewan Rakyat that the government set it up, through the Ministry of Digital and AI Malaysia Berhad, to study clear mechanisms for regulating the use of AI in organisations across sectors.",
           "source_ids": [
             "my-hansard-dr-2026-10-05"
           ]
@@ -40846,7 +40846,7 @@
           "kind": "function",
           "code": "incident_response",
           "basis": "mandate",
-          "text": "The Dewan Rakyat record says it is responsible for AI governance work covering safety benchmarking, risk assessment and incident reporting for corrective action.",
+          "text": "The Minister of Digital, Gobind Singh Deo, told the Dewan Rakyat that it is responsible for AI governance work covering safety benchmarking, risk assessment and incident reporting for corrective action.",
           "source_ids": [
             "my-hansard-dr-2026-10-05"
           ]
@@ -97688,7 +97688,13 @@
             ]
           ],
           "accessed": "2026-10-17",
-          "url": "https://r.jina.ai/https://eur-lex.europa.eu/legal-content/EN/AUTO/?uri=CELEX:02024R1689-20260727"
+          "url": "https://r.jina.ai/https://eur-lex.europa.eu/legal-content/EN/AUTO/?uri=CELEX:02024R1689-20260727",
+          "anchors": [
+            {
+              "text": "Article 74 Market surveillance and control of AI systems in the Union market",
+              "kind": "provision"
+            }
+          ]
         },
         {
           "text": "The AI Office shall provide the secretariat for the Board, convene the meetings upon request of the Chair, and prepare the agenda in accordance with the tasks of the Board pursuant to this Regulation and its rules of procedure.",
@@ -97732,6 +97738,10 @@
             {
               "text": "‘AI Office’ means the Commission’s function of contributing to the implementation, monitoring and supervision of AI systems and general-purpose AI models, and AI governance, provided for in Commission Decision of 24 January 2024",
               "kind": "definition"
+            },
+            {
+              "text": "Article 27 Fundamental rights impact assessment for high-risk AI systems",
+              "kind": "provision"
             }
           ],
           "accessed": "2026-10-17"
