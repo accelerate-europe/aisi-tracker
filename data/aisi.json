@@ -33089,16 +33089,6 @@
           "source_ids": [
             "de-breg"
           ]
-        },
-        {
-          "id": "claims-1c74cce9dbee43f88ab46829071a01ac",
-          "kind": "function",
-          "code": "international_cooperation",
-          "basis": "activity",
-          "text": "The participating authorities are already holding technical exchanges with international partner institutions, including those in France and the UK, and the EU AI Office.",
-          "source_ids": [
-            "de-bmds"
-          ]
         }
       ]
     },
@@ -41781,6 +41771,16 @@
       ],
       "claims": [
         {
+          "id": "claims-b2fd1447b4de4cc4ab8fe04089743bc3",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "text": "Constructed a new set of tasks and tools for the network's joint testing exercise on agentic safety.",
+          "source_ids": [
+            "catalogue-agentic-report"
+          ]
+        },
+        {
           "id": "claims-c9a798e398554a7abdf03d003c394160",
           "kind": "function",
           "code": "international_cooperation",
@@ -43577,31 +43577,6 @@
             ]
           ],
           "gloss": "German AI security institute \"AISI Deutschland\" starts work",
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "Bereits jetzt findet ein fachlicher Austausch zwischen den beteiligten Behörden sowie mit internationalen Partnerinstitutionen, unter anderem mit Frankreich, dem Vereinigten Königreich und dem EU AI Office, statt.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "de-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-1c74cce9dbee43f88ab46829071a01ac"
-              },
-              "text"
-            ]
-          ],
-          "gloss": "Technical exchanges are already taking place between participating authorities and international partner institutions, including France, the UK and the EU AI Office.",
-          "anchors": [
-            {
-              "text": "Deutsches KI-Sicherheitsinstitut „AISI Deutschland“ nimmt Arbeit auf",
-              "kind": "heading",
-              "gloss": "German AI Safety Institute “AISI Deutschland” starts work"
-            }
-          ],
           "accessed": "2026-10-17"
         },
         {
@@ -78919,6 +78894,33 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "In addition, Kenya also constructed a new set of tasks and tools.",
+          "anchors": [
+            {
+              "text": "Testing Datasets – Tasks and Tools",
+              "kind": "heading"
+            },
+            {
+              "text": "AISIs from Kenya, Canada, and the Republic of Korea",
+              "kind": "definition"
+            }
+          ],
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "ke-ai-safety-institute"
+              },
+              "claims",
+              {
+                "id": "claims-b2fd1447b4de4cc4ab8fe04089743bc3"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-25"
         }
       ],
       "origin": "International Network of AI Safety Institutes",
@@ -110962,7 +110964,14 @@
             ]
           ],
           "accessed": "2026-10-21",
-          "gloss": "AISI also needs further strengthening. The drafting of guidelines to ensure safety and security in the use and development of AI, including agentic AI, active evaluation of high-performance AI to deter events that threaten national security, the collection and sharing of international AI vulnerability and incident information, and the drafting of international norms and standards will be advanced together."
+          "gloss": "AISI also needs further strengthening. The drafting of guidelines to ensure safety and security in the use and development of AI, including agentic AI, active evaluation of high-performance AI to deter events that threaten national security, the collection and sharing of international AI vulnerability and incident information, and the drafting of international norms and standards will be advanced together.",
+          "anchors": [
+            {
+              "text": "ＡＩセーフティ・インスティテュート",
+              "kind": "definition",
+              "gloss": "AI Safety Institute"
+            }
+          ]
         }
       ],
       "snapshot": {
