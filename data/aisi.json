@@ -31317,7 +31317,6 @@
             "date": "2026-11-22"
           },
           "functions": [
-            "evaluation_methods",
             "model_testing"
           ]
         }
@@ -32059,7 +32058,7 @@
         {
           "id": "claims-58fa4048634e4f0ea30cee90e66f4b9b",
           "kind": "function",
-          "code": "evaluation_methods",
+          "code": "model_testing",
           "basis": "activity",
           "text": "Its Red Team tested whether the way synthetic attacks are generated affects monitor evaluations, and found that the same monitor missed 0.2% to 23% of successful attacks depending on the attack policy.",
           "source_ids": [
@@ -34116,7 +34115,7 @@
           },
           {
             "date": "2026-11-25",
-            "scope": "Post-release news re-check from 23 November 2026: the AI Office page (still more than 125 staff), the Commission's digital-strategy library (newest 25 November) and news (25 November), and the Official Journal's L and C series of 23 to 25 November. No new AI Act act and no new Office output were identified; three corrigenda in the L series of 23 November were not read. Partial check, not a full record re-check."
+            "scope": "Post-release news re-check from 23 November 2026: the AI Office page (still more than 125 staff), the Commission's digital-strategy library (newest 25 November) and news (listing read to 20 November, with items of 23 to 25 November found by search), and the Official Journal's L and C series of 23 to 25 November. No new AI Act act and no new Office output were identified; three corrigenda in the L series of 23 November were not read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -40827,7 +40826,7 @@
           },
           {
             "date": "2026-11-25",
-            "scope": "Post-release news re-check from 23 November 2026: AI Malaysia's institute page and news (newest 11 September), the Ministry of Digital's releases (25 November, titles only) and the Dewan Rakyat Hansard of 23 and 24 November. Added the Digital Minister's answer of 24 November, which says the government is still developing the institute and that it is to work on evaluation methods. No institute line was found in the ministry's 2027 budget schedule read, and passage of the Supply Bill 2027 was not established. Partial check, not a full record re-check."
+            "scope": "Post-release news re-check from 23 November 2026: AI Malaysia's institute page and news (newest 11 September), the Ministry of Digital's releases (25 November, titles only) and the Dewan Rakyat Hansard of 23 and 24 November. Added the Digital Minister's answer of 24 November, which says the government is developing the institute and that it will focus on, among other things, developing evaluation methods. No institute line was found in the ministry's 2027 budget schedule read, and passage of the Supply Bill 2027 was not established. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -40869,7 +40868,7 @@
         "my-aisafe-overview",
         "my-hansard-dr-2026-11-24"
       ],
-      "notes": "AI Malaysia Berhad was itself created the same day from the National AI Office. The 2026-2030 National AI Action Plan does not mention the institute; it calls instead for a national 'AI Trust Function' to evaluate, monitor and respond to AI risks. In September 2026 AI Malaysia's chair still described setting up the institute as a priority in the works. On 24 November 2026 the Digital Minister told the Dewan Rakyat that the government is still developing the institute under AI Malaysia. This is the weakest 'established' record in the dataset: designation and mandate are stated in a primary government release, but no head, staff, budget or launch is published.\n\nThe ministry identifies AI Malaysia Berhad as a national AI entity under the Ministry of Digital and assigns it the national AI Safety Institute role. The institute's separate legal form and host classification are not specified in this announcement.",
+      "notes": "AI Malaysia Berhad was itself created the same day from the National AI Office. The 2026-2030 National AI Action Plan does not mention the institute; it calls instead for a national 'AI Trust Function' to evaluate, monitor and respond to AI risks. In September 2026 AI Malaysia's chair still described setting up the institute as a priority in the works. On 24 November 2026 the Minister of Digital told the Dewan Rakyat that the government is developing the institute under AI Malaysia. This is the weakest 'established' record in the dataset: designation and mandate are stated in a primary government release, but no head, staff, budget or launch is published.\n\nThe ministry identifies AI Malaysia Berhad as a national AI entity under the Ministry of Digital and assigns it the national AI Safety Institute role. The institute's separate legal form and host classification are not specified in this announcement.",
       "website": "https://ai.gov.my/my-aisafe/",
       "mandate_short": "Evaluates, tests and red-teams AI systems; supports standards and regulation.",
       "legal_basis": {
@@ -41073,7 +41072,7 @@
           "kind": "function",
           "code": "evaluation_methods",
           "basis": "mandate",
-          "text": "The Digital Minister told the Dewan Rakyat that it is to focus on developing evaluation methods, alongside research, testing and assessment of AI safety risks.",
+          "text": "The Minister of Digital, Gobind Singh Deo, told the Dewan Rakyat that it will focus on developing evaluation methods, alongside research, testing and assessment of AI safety risks.",
           "source_ids": [
             "my-hansard-dr-2026-11-24"
           ]
@@ -123305,13 +123304,14 @@
     {
       "id": "my-hansard-dr-2026-10-05",
       "url": "https://hansard.parlimen.gov.my/hansard/dewan-rakyat/2026-10-05",
-      "title": "Dewan Rakyat Hansard, 5 October 2026",
+      "title": "Dewan Rakyat Hansard, 5 October 2026 (draft Hansard)",
       "publisher": "Parliament of Malaysia, Dewan Rakyat",
       "type": "primary",
       "published": "2026-10-05",
       "accessed": "2026-11-10",
       "language": "ms",
       "origin": "MY",
+      "access_note": "The Hansard page marks each speech as draft.",
       "excerpts": [
         {
           "text": "Malaysia AI Safety Institute bertanggungjawab untuk melihat secara spesifik kepada aspek tadbir urus AI ataupun AI governance yang merangkumi aspek penandaarasan keselamatan, penilaian risiko dan pelaporan insiden untuk tindakan pembetulan",
@@ -130240,6 +130240,23 @@
             ]
           ],
           "accessed": "2026-11-25"
+        },
+        {
+          "text": "The primary audience for NIST SP 2400-801 is anyone conducting evaluations of SI systems, including SI users, deployers, implementers, and performance evaluators.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "practices-for-evaluating-si-driven-uplift-initial-public-draft"
+              },
+              "type"
+            ]
+          ],
+          "accessed": "2026-11-25"
         }
       ],
       "snapshot": {
@@ -130252,13 +130269,14 @@
     {
       "id": "my-hansard-dr-2026-11-24",
       "url": "https://hansard.parlimen.gov.my/hansard/dewan-rakyat/2026-11-24",
-      "title": "Dewan Rakyat Hansard, 24 November 2026",
+      "title": "Dewan Rakyat Hansard, 24 November 2026 (draft Hansard)",
       "publisher": "Parliament of Malaysia, Dewan Rakyat",
       "type": "primary",
       "published": "2026-11-24",
       "accessed": "2026-11-25",
       "language": "ms",
       "origin": "MY",
+      "access_note": "The Hansard page marks each speech as draft.",
       "excerpts": [
         {
           "text": "kerajaan juga sedang membangunkan Institut Keselamatan AI Malaysia atau Malaysia AI Safety Institute di bawah AI Malaysia dan ini bagi memperkukuhkan keupayaan negara dalam aspek-aspek keselamatan AI.",
