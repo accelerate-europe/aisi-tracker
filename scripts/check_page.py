@@ -666,6 +666,44 @@ def check_form_basis(soup, data) -> list[str]:
     return errors
 
 
+HOST_ACRONYM = re.compile(r"[A-Z][\w-]*(?: (?:[A-Z][\w-]*|of|and|for|the))* \(([A-Z][A-Za-z]{1,7})\)", re.ASCII)
+
+
+def host_short(inst: dict) -> str | None:
+    """The host's short form for the Form row, or None (mirrors hostShort in site/index.html)."""
+    if not inst.get("host") or inst.get("legal_form") not in {"unit_in_existing_body", "university_centre"}:
+        return None
+    host = re.split(r",? (?:with|under) |; ", inst["host"])[0].strip()
+    named = re.sub(r"\s*\([^)]*\)", "", host).lower()
+    rt = inst.get("reports_to") or {}
+    parents = ";".join(v for v in (rt.get("name"), rt.get("name_en")) if v).lower().split(";")
+    if any(p.strip() and named in p for p in parents):
+        return None
+    return HOST_ACRONYM.sub(r"\1", host, count=1)
+
+
+def check_form_host(soup, data) -> list[str]:
+    """The Form row names the host's short form in brackets after the form, unless Reports to already names the host."""
+    errors = []
+    institutes = {i["jurisdiction_id"]: i for i in data["institutes"]}
+    for card in soup.select(".card:not(.mini)[data-j]"):
+        inst = institutes.get(card.get("data-j"))
+        form = card.select_one('.row[data-track="4"] .v')
+        if not inst or not form:
+            continue
+        form = copy.copy(form)  # the soup is shared with later checks
+        for marks in form.select(".cites"):
+            marks.decompose()
+        first = " ".join(form.get_text().split()).split(";")[0]  # no separator: an acronym is its own element
+        short = host_short(inst)
+        if short and not first.endswith(f"({short})"):
+            errors.append(f"{card.get('data-j')}: Form should name the host as ({short}), got {first!r}")
+        # A federation's Form row also holds its member list, so only a unit's or centre's form text is held to no brackets.
+        if not short and inst.get("legal_form") in {"unit_in_existing_body", "university_centre"} and "(" in first:
+            errors.append(f"{card.get('data-j')}: Form names a host in brackets where none is due: {first!r}")
+    return errors
+
+
 def check_static_page(dist: Path, data: dict) -> list[str]:
     """The pre-rendered page as saved, before any script runs: every jurisdiction, the stat row, the download links,
     the saved map's early download and the first visit's byte budgets."""
@@ -683,6 +721,7 @@ def check_static_page(dist: Path, data: dict) -> list[str]:
         errors.append(f"static page: {len(missing)} jurisdictions missing, e.g. {missing[:5]}")
     errors.extend(check_network_cells(soup, data))
     errors.extend(check_form_basis(soup, data))
+    errors.extend(check_form_host(soup, data))
     rows = soup.select("#world-rows > tr, #world-rest > tr")
     if len(rows) != sum(j["kind"] != "supranational" for j in data["jurisdictions"]):
         errors.append(f"static page: expected a table row for every state and territory, got {len(rows)}")

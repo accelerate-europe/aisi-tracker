@@ -2339,3 +2339,53 @@ def test_fold_count_and_members_are_exact():
     wrong = ('<details class="card mini" id="c-bg" data-j="BG"><summary>Bulgaria</summary><div class="body-group"><p class="gl">AI Act authorities</p>'
              f'<details class="more"><summary>2 more AI Act bodies</summary><ul>{"".join(lis[:2])}</ul></details><ul>{"".join(lis[2:])}</ul></div></details>')
     assert any("folded" in e for e in check_page.check_nonidentified_folds(wrong, data))
+
+
+@pytest.mark.parametrize("host, form, reports_to, expected", [
+    ("National Institute of Standards and Technology (NIST)", "unit_in_existing_body", {"name": "Department of Commerce"}, "NIST"),
+    ("Digital Trust Centre at Nanyang Technological University (NTU), with IMDA", "university_centre",
+     {"name": "Infocomm Media Development Authority"}, "Digital Trust Centre at NTU"),
+    ("Norwegian Digitalisation Agency (Digdir)", "unit_in_existing_body", {"name": "Digitaliserings- og forvaltningsdepartementet"}, "Digdir"),
+    ("Spanish Agency for the Supervision of Artificial Intelligence (AESIA)", "unit_in_existing_body", {"name": "Ministerio"}, "AESIA"),
+    # Reports to already names the host: in full, as part of a longer name, or in English.
+    ("Cabinet Office", "unit_in_existing_body", {"name": "Cabinet Office"}, None),
+    ("European Commission", "unit_in_existing_body", {"name": "European Commission, Directorate-General for Communications Networks"}, None),
+    ("Innovation, Science and Economic Development Canada (ISED)", "unit_in_existing_body",
+     {"name": "Ministère", "name_en": "Innovation, Science and Economic Development Canada"}, None),
+    # A federation shows its members; an unknown form stays as it is.
+    ("Federation steered by SGDSN and DGE", "federation_of_existing_bodies", {"name": "SGDSN"}, None),
+    ("AI Malaysia Berhad, under the Ministry of Digital", "unknown", {"name": "Kementerian Digital"}, None),
+    # No acronym in brackets: the host text up to its with clause.
+    ("Department of Digital Affairs, with partners", "unit_in_existing_body", {"name": "Ministry"}, "Department of Digital Affairs"),
+])
+def test_host_short_form(host, form, reports_to, expected):
+    assert check_page.host_short({"host": host, "legal_form": form, "reports_to": reports_to}) == expected
+
+
+def form_card(jid, text):
+    return f'<article class="card" data-j="{jid}"><div class="row" data-track="4"><div class="k">Form</div><div class="v">{text}</div></div></article>'
+
+
+@pytest.mark.parametrize("text, errors", [
+    ("Unit in a government agency (NIST); set up by an executive decision", 0),
+    ("Unit in a government agency; set up by an executive decision", 1),
+    ("Unit in a government agency (National Institute of Standards and Technology)", 1),
+    # As rendered: the acronym is its own element and the citation marks follow the text.
+    ('Unit in a government agency (<abbr class="g" tabindex="0">NIST</abbr>); set up by ministerial '
+     '<span class="cite-glue">act<span class="cites"><a class="cn">1</a>,<a class="cn">4</a></span></span>', 0),
+    ('Unit in a government agency <span class="cite-glue">(NIST)<span class="cites"><a class="cn">3</a></span></span>', 0),
+])
+def test_form_row_names_the_host(text, errors):
+    data = {"institutes": [{"jurisdiction_id": "US", "host": "National Institute of Standards and Technology (NIST)",
+                            "legal_form": "unit_in_existing_body", "reports_to": {"name": "Department of Commerce"}}]}
+    assert len(check_page.check_form_host(BeautifulSoup(form_card("US", text), "html.parser"), data)) == errors
+
+
+@pytest.mark.parametrize("form, text, errors", [
+    ("unit_in_existing_body", "Unit in a ministry", 0),
+    ("unit_in_existing_body", "Unit in a ministry (Cabinet Office)", 1),
+    ("federation_of_existing_bodies", "Network of existing bodies Members: ANSSI (cyber agency)", 0),
+])
+def test_form_row_without_a_host_name(form, text, errors):
+    data = {"institutes": [{"jurisdiction_id": "GB", "host": "Cabinet Office", "legal_form": form, "reports_to": {"name": "Cabinet Office"}}]}
+    assert len(check_page.check_form_host(BeautifulSoup(form_card("GB", text), "html.parser"), data)) == errors

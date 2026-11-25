@@ -2000,6 +2000,17 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
     });
     return ol;
   }
+  // The Form row names the host of a unit or university centre unless Reports to already names it (a federation shows its members instead).
+  // Short form: the host text up to a "with" or "under" clause, with a name followed by its acronym in brackets read as the acronym:
+  // "National Institute of Standards and Technology (NIST)" gives NIST, "Digital Trust Centre at Nanyang Technological University (NTU), with IMDA" gives "Digital Trust Centre at NTU".
+  // check_page.py host_short mirrors this.
+  function hostShort(inst) {
+    if (!inst.host || (inst.legal_form !== "unit_in_existing_body" && inst.legal_form !== "university_centre")) return null;
+    var h = inst.host.split(/,? (?:with|under) |; /)[0].trim(), named = h.replace(/\s*\([^)]*\)/g, "").toLowerCase();
+    var rt = inst.reports_to || {}, parents = [rt.name, rt.name_en].filter(Boolean).join(";").toLowerCase().split(";");
+    if (parents.some(function (p) { return p.trim() && p.indexOf(named) !== -1; })) return null;
+    return h.replace(/[A-Z][\w-]*(?: (?:[A-Z][\w-]*|of|and|for|the))* \(([A-Z][A-Za-z]{1,7})\)/, "$1");
+  }
   // The producer owns evidence and record selection; these helpers only read bindings.
   function fieldCitations(record, fields) {
     return fields.reduce(function (ids, field) {
@@ -2374,6 +2385,8 @@ html :is(h2, h3, p)[tabindex="-1"]:focus { background-color: var(--highlight-fil
       var form = [LEGAL_FORM[inst.legal_form]].filter(Boolean);
       var ht = inst.placement && HOST[inst.placement.host_type];
       if (ht && inst.legal_form !== "university_centre") { if (inst.legal_form === "unit_in_existing_body") form[0] = "Unit " + ht; else if (form.length) form[0] += " " + ht; else form.push(ht); }
+      var hs = hostShort(inst);
+      if (hs && form.length) form[0] += " (" + hs + ")";
       if (inst.legal_basis) {
         if (!form.length) form.push("not published"); // the founding act alone is no form (Institutional set-up lists these under Legal form not published)
         var lb = inst.legal_basis, fore = lb.state === "foreseen";
