@@ -31998,16 +31998,6 @@
           ]
         },
         {
-          "id": "claims-4d5eeda7663f4d659d6e71243c25a157",
-          "kind": "function",
-          "code": "risk_monitoring",
-          "basis": "activity",
-          "text": "Its inaugural Frontier AI Trends Report draws on two years' worth of evaluations to give insights into the trajectory of AI development.",
-          "source_ids": [
-            "depth-gb-blog"
-          ]
-        },
-        {
           "id": "claims-ec7fa65b316848e3abf76df549ca507a",
           "kind": "function",
           "code": "risk_monitoring",
@@ -34632,16 +34622,6 @@
           "source_ids": [
             "eu-midday-briefing-2026-09-11"
           ]
-        },
-        {
-          "id": "claims-6f57b267641a47deb8fc7f26ee48d638",
-          "kind": "function",
-          "code": "sandbox",
-          "basis": "mandate",
-          "text": "The AI Act empowers the AI Office to establish a Union-level AI regulatory sandbox for systems covered by Article 75(1).",
-          "source_ids": [
-            "r5-eu-ai-act-article74"
-          ]
         }
       ],
       "funding": [
@@ -35480,7 +35460,9 @@
             "institute_id": "us-caissi",
             "date": "2026-10-16"
           },
-          "shows": []
+          "shows": [
+            "standards_guidance"
+          ]
         },
         {
           "date": "2025-12-02",
@@ -36123,6 +36105,16 @@
           "text": "Built custom agent hijacking scenarios in-house, in addition to AgentDojo's default suite.",
           "source_ids": [
             "us-hijacking-blog-2025-archive"
+          ]
+        },
+        {
+          "id": "claims-1ee896a2dc0d4c2fb4ecc1da3303bf29",
+          "kind": "function",
+          "code": "standards_guidance",
+          "basis": "activity",
+          "text": "Released draft guidelines for developers on methods to anticipate, measure and mitigate misuse of AI models (NIST AI 800-1) in July 2024.",
+          "source_ids": [
+            "us-nist-caisi-overview-2026"
           ]
         },
         {
@@ -36831,7 +36823,7 @@
         "notes": "Cyber agency searched: Canadian Centre for Cyber Security (CCCS) and its parent Communications Security Establishment Canada (CSE), 2026-10-20 (en, fr). The CSE annual report names strategic direction for CAISI; no separate CCCS cooperation was found in its English or French about pages or targeted searches."
       },
       "testing_capacity": {
-        "notes": "Function statement, not counted as testing: 'We conduct projects supporting the government's priorities on AI safety, including joint testing with international counterparts' (ISED institute page). ISED says the institute 'directly conducts projects supporting the Government's priorities on AI safety through the National Research Council', a stream 'implemented through a Memorandum of Understanding (MOU) with the National Research Council (NRC)'. The National Research Council says its researchers took part in a joint testing exercise through the institute, evaluating AI agents and how well AI prevents harmful content in nine languages. No headcount or technical staff is published. Joint network testing reported, 2025-06-26 (multilingual exercise) and 2025-07-17 (agentic exercise); the network reports credit Canada with analysis. The renewed UK-Canada partnership of 13 October 2026 mentions 'exploring staff exchanges and coordinated evaluation activities'. The national AI strategy says Canada will invest $50 million to expand the institute's capabilities, including to conduct transparent evaluations of AI models.",
+        "notes": "Function statement, not counted as testing: 'We conduct projects supporting the government's priorities on AI safety, including joint testing with international counterparts' (ISED institute page). ISED says the institute 'directly conducts projects supporting the Government's priorities on AI safety through the National Research Council', a stream 'implemented through a Memorandum of Understanding (MOU) with the National Research Council (NRC)'. The National Research Council says its researchers took part in a joint testing exercise through the institute, evaluating AI agents and how well AI prevents harmful content in nine languages. No headcount or technical staff is published. Joint network testing reported, 2025-06-26 (multilingual exercise) and 2025-07-17 (agentic exercise); the multilingual report's Cantonese section, contributed by Canada AISI, says 'Our evaluation involved testing the two models using a translated subset of the original datasets', and the agentic report credits Canada with analysis. The renewed UK-Canada partnership of 13 October 2026 mentions 'exploring staff exchanges and coordinated evaluation activities'. The national AI strategy says Canada will invest $50 million to expand the institute's capabilities, including to conduct transparent evaluations of AI models.",
         "source_ids": [
           "r5-ca-ai-for-all",
           "ca-ised",
@@ -38307,16 +38299,6 @@
           ]
         },
         {
-          "id": "claims-4b1426115be64960882f6107061262e3",
-          "kind": "function",
-          "code": "incident_response",
-          "basis": "mandate",
-          "text": "The AI Basic Plan says the institute needs further strengthening and lists the collection and sharing of international AI vulnerability and incident information among the work to advance.",
-          "source_ids": [
-            "jp-ai-basic-plan-2026"
-          ]
-        },
-        {
           "id": "claims-a2e4e8a8343c4508aa193d7ee63e5507",
           "kind": "function",
           "code": "international_cooperation",
@@ -38344,16 +38326,6 @@
           "text": "Led the launch of a discussion framework aimed at building AI safety benchmarks and held its kick-off in October 2025.",
           "source_ids": [
             "catalogue-jp-4-2"
-          ]
-        },
-        {
-          "id": "claims-bcf4a1e2247f40d390627089dbe5a0ce",
-          "kind": "function",
-          "code": "convening",
-          "basis": "mandate",
-          "text": "It says that, as a hub for AI safety in Japan, it plans to consolidate the latest information from industry and academia and promote collaboration among related companies and organisations.",
-          "source_ids": [
-            "catalogue-jp-20-2"
           ]
         },
         {
@@ -39161,16 +39133,6 @@
           ]
         },
         {
-          "id": "claims-e741a47262b84ec4aed430eb65c3255a",
-          "kind": "function",
-          "code": "adoption",
-          "basis": "mandate",
-          "text": "Is intended to be set up to spread safe AI development and use.",
-          "source_ids": [
-            "kr-policy-briefing-2024-10-18"
-          ]
-        },
-        {
           "id": "claims-d42654323cc84f3d8b02ef4816c80862",
           "kind": "function",
           "code": "model_testing",
@@ -39586,25 +39548,6 @@
           "shows": [
             "evaluation_methods"
           ]
-        },
-        {
-          "date": "2026-07-23",
-          "title": "Best Practice: Automated Evaluation of Large Language Models",
-          "type": "guidance",
-          "lineage": "naaimes-automated-evaluation-best-practice-2026",
-          "attribution": "own_publication",
-          "attribution_note": "The institute directly publishes the network's full original guidance document on its own site. Country-only network membership does not establish publication credit for other institutes.",
-          "source_ids": [
-            "depth-sg-resources",
-            "r3-naaimes-best-practice"
-          ],
-          "qualifies_as": "none",
-          "qualification_note": "Substantive guidance remains in the publication catalogue but does not itself report a qualifying evaluation, test result, benchmark or technical research result.",
-          "credit": {
-            "institute_id": "sg-aisi",
-            "date": "2026-07-23"
-          },
-          "shows": []
         }
       ],
       "head": {
@@ -72326,71 +72269,6 @@
             ]
           ],
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "July 23, 2026",
-          "accessed": "2026-10-17",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "outputs",
-              {
-                "lineage": "naaimes-automated-evaluation-best-practice-2026"
-              },
-              "date"
-            ],
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "outputs",
-              {
-                "lineage": "naaimes-automated-evaluation-best-practice-2026"
-              },
-              "credit",
-              "date"
-            ]
-          ]
-        },
-        {
-          "text": "Best Practice Guidance Document: Automated Evaluation of Large Language Models",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "outputs",
-              {
-                "lineage": "naaimes-automated-evaluation-best-practice-2026"
-              },
-              "attribution_note"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "Best Practice Guidance Document: Automated Evaluation of Large Language Models Report•July 23, 2026",
-          "accessed": "2026-10-18",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
-              },
-              "outputs",
-              {
-                "lineage": "naaimes-automated-evaluation-best-practice-2026"
-              },
-              "credit",
-              "institute_id"
-            ]
-          ],
-          "url": "https://sgaisi.sg/resources/"
         }
       ],
       "origin": "SG",
@@ -76845,23 +76723,6 @@
           ]
         },
         {
-          "text": "As a hub for AI safety in Japan, J -AISI will consolidate the latest information in \nindustry and academia, then promote collaboration among related companies \nand organizations.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "jp-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-bcf4a1e2247f40d390627089dbe5a0ce"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
           "text": "AISI participated in discussions on appropriate procurements and utilizations of AI \nby Japanese government, led by the Digital Agency and other governmental bodies, \nand contributed to the discussions by making proposals for addressing the risks \nassociated with generative AI.",
           "supports": [
             [
@@ -80898,23 +80759,6 @@
               "claims",
               {
                 "id": "claims-be6f898fa4d84ab1950efd2f440e8ff4"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "Our inaugural Frontier AI Trends Report draws on 2 years' worth of evaluations to provide accessible insights into the trajectory of AI development.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "gb-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-4d5eeda7663f4d659d6e71243c25a157"
               },
               "text"
             ]
@@ -92061,6 +91905,29 @@
             ]
           ],
           "accessed": "2026-10-17"
+        },
+        {
+          "text": "Guidelines on Managing Misuse Risk for AI Models (NIST AI 800-1) • Released draft guidelines for developers on methods to anticipate, measure, and mitigate misuse of AI models in July 2024.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-1ee896a2dc0d4c2fb4ecc1da3303bf29"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-10-17",
+          "anchors": [
+            {
+              "text": "NIST Center for AI Standards and Innovation Overview",
+              "kind": "heading"
+            }
+          ]
         }
       ],
       "origin": "US",
@@ -93649,17 +93516,6 @@
               "institutes",
               {
                 "id": "gb-aisi"
-              },
-              "outputs",
-              {
-                "lineage": "naaimes-automated-evaluation-best-practice-2026"
-              },
-              "title"
-            ],
-            [
-              "institutes",
-              {
-                "id": "sg-aisi"
               },
               "outputs",
               {
@@ -97879,30 +97735,6 @@
             }
           ],
           "accessed": "2026-10-17"
-        },
-        {
-          "text": "The AI Office may establish an AI regulatory sandbox at Union level for AI systems covered by Article 75(1).",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "eu-ai-office"
-              },
-              "claims",
-              {
-                "id": "claims-6f57b267641a47deb8fc7f26ee48d638"
-              },
-              "text"
-            ]
-          ],
-          "anchors": [
-            {
-              "kind": "provision",
-              "text": "Article 57 AI regulatory sandboxes"
-            }
-          ],
-          "accessed": "2026-10-17",
-          "url": "https://r.jina.ai/https://eur-lex.europa.eu/legal-content/EN/AUTO/?uri=CELEX:02024R1689-20260727"
         }
       ],
       "legal_text": true,
@@ -110874,17 +110706,6 @@
                 "id": "claims-c86a9cf9ca38497084adb323bc3d25e9"
               },
               "text"
-            ],
-            [
-              "institutes",
-              {
-                "id": "jp-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-4b1426115be64960882f6107061262e3"
-              },
-              "text"
             ]
           ],
           "accessed": "2026-10-21",
@@ -111707,24 +111528,6 @@
           ],
           "accessed": "2026-10-21",
           "gloss": "The plan is to build an AI safety partnership of industry, academia and research institutes centred on the AI Safety Institute to promote research cooperation in AI safety policy and technology."
-        },
-        {
-          "text": "우리나라도 AI안전연구소를 설치하여 안전한 AI 개발·활용을 확산하고, AI 안전 확보를 위한 국제적 연대를 강화해 나가고자 합니다.",
-          "supports": [
-            [
-              "institutes",
-              {
-                "id": "kr-aisi"
-              },
-              "claims",
-              {
-                "id": "claims-e741a47262b84ec4aed430eb65c3255a"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-21",
-          "gloss": "Korea too intends to set up an AI Safety Institute to spread safe AI development and use and to strengthen international solidarity for securing AI safety."
         },
         {
           "text": "국가 차원에서 관리해야 할 주요 AI 위험을 정의하고 AI 안전 평가방법론 개발과 위험 완화 방안을 마련하겠습니다.",
