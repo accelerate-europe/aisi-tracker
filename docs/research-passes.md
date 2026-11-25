@@ -4,6 +4,8 @@ Research for the dataset runs as dedicated passes. A pass is one research sessio
 
 Every output a pass adds answers "which function does it show" in `outputs[].shows`, judged on its bound text against the [function tests](design/claims-1.1.md#2-code-lists-proposals).
 
+A function entry for an institute follows the same tests, the rule on activity entries in the same section and the [staff question](design/claims-1.1.md#5-checks) of its review. Where a pass finds no work that an activity entry needs, it reports the nearest miss as a `rejected` finding, and the miss is not coded.
+
 `scripts/research_pass.py` extracts a pass's log and validates pass folders. `scripts/research_log.py` is the transcript extractor it uses; its module docstring defines the log format. `scripts/sweep.py` prepares the two recurring kinds of pass, the per-state re-check and the monthly global topic sweep ([sweeps](sweep.md)).
 
 ## Where passes live

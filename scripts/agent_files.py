@@ -215,7 +215,7 @@ def orientation(published: dict) -> list[tuple[str, str]]:
          "Only the national cyber security agency, marked `cyber_agency`, is searched for at every AISI, so a missing partner of another kind does not mean there is none."),
         ("Functions",
          "An AISI's functions (`functions`) give each current (not retired) code in `dataset.vocabularies.function` once, in that order, with a value (`value`): "
-         "mandate (a text assigns it), activity (a text shows it done), both, not_found (checked, no claim found) or not_coded (not yet checked against that code). "
+         "mandate (a text assigns it), activity (a text shows work that exists, a named piece of work or programme or work reported as done, not a description of what the AISI is for, focuses on or plans to do), both, not_found (checked, no claim found) or not_coded (not yet checked against that code). "
          "The claims behind a value (`claim_ids`) list assignments in authored order, then live activity newest first (undated last, ties in authored order), then expired activity in authored order; `since` is the earliest live activity date unless any is undated, and `newest` names the first live activity claim. A function claim on a jurisdiction is about the related body its `body_id` names. "
          "The functions and their code list are provisional (`dataset.provisional`): codes may be added, split, renamed or removed in a minor version, "
          "and a retired code stays in the list with `deprecated` and `replaced_by`."),

@@ -4678,7 +4678,7 @@
             "mandate",
             "activity"
           ],
-          "description": "For a function claim: mandate when a founding, legal, plan or announcement text assigns it; activity when a text shows it done. Evidence of both is two claims."
+          "description": "For a function claim: mandate when a founding, legal, plan or announcement text assigns it; activity when a text shows it done; for an institute, the text shows work that exists, either a named piece of work or programme, or work the text reports as done, and a description of what the institute is for, focuses on or plans to do is not activity. Evidence of both is two claims."
         },
         "body_id": {
           "type": "string",
