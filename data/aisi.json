@@ -29663,6 +29663,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: the institute's blog and research pages (newest 26 October), its GOV.UK organisation page and news (newest 12 October), Cabinet Office news to 23 November, the Commons written answers of 20 November and the Lords daily reports of 17 to 20 November. No new institute fact entered. The Government's response to the Joint Committee on Human Rights (HC 844, published 20 November) restates the institute's own model testing; no government response to HC 689 was found in the sources read. Who the institute's two Directors are is not published in any official source read. The Commons daily report for 23 November was not yet available. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: the institute's blog (newest 23 November) and research pages (22 November), its GOV.UK organisation page (newest news 12 October), Cabinet Office news to 25 November, the Commons and Lords daily reports of 23 and 24 November, written statements to 24 November and the Business and Trade Committee's reports page. Added the Red Team's paper of 22 November on how attack policies affect monitor evaluations as an output. No government response to HC 689 was found in the sources read, and no source read names the two Directors of the answer to question 43123. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -29829,7 +29833,9 @@
         "gb-pq-38577-2026",
         "gb-no-ai-statement-2026",
         "gb-pq-43123-2026",
-        "gb-approach-2024"
+        "gb-approach-2024",
+        "gb-attack-policy-2026",
+        "gb-attack-policy-blog-2026"
       ],
       "people": [
         {
@@ -31292,6 +31298,27 @@
             "institute_id": "gb-aisi",
             "date": "2026-10-26"
           }
+        },
+        {
+          "date": "2026-11-22",
+          "type": "report",
+          "title": "Attack Policy Selection can Mislead Monitor Evaluators",
+          "source_ids": [
+            "gb-attack-policy-2026",
+            "gb-attack-policy-blog-2026"
+          ],
+          "lineage": "attack-policy-selection-can-mislead-monitor-evaluators",
+          "attribution": "own_publication",
+          "attribution_note": "The institute's research page lists the paper on 22 November 2026, and its blog post of 23 November 2026 presents it as a new paper by the institute's Red Team.",
+          "qualifies_as": "published_work",
+          "qualification_note": "Institute-credited technical research with methods or findings, rather than policy, programme reporting or guidance alone.",
+          "credit": {
+            "institute_id": "gb-aisi",
+            "date": "2026-11-22"
+          },
+          "functions": [
+            "model_testing"
+          ]
         }
       ],
       "head": {
@@ -32027,6 +32054,16 @@
             "gb-pq-42056-2026"
           ],
           "text": "The government says it has established the AI Threat Assessment Centre (AITAC), which draws on expertise from bodies including the institute and the National Cyber Security Centre to assess national security threats from AI."
+        },
+        {
+          "id": "claims-58fa4048634e4f0ea30cee90e66f4b9b",
+          "kind": "function",
+          "code": "model_testing",
+          "basis": "activity",
+          "text": "Its Red Team tested whether the way synthetic attacks are generated affects monitor evaluations, and found that the same monitor missed 0.2% to 23% of successful attacks depending on the attack policy.",
+          "source_ids": [
+            "gb-attack-policy-blog-2026"
+          ]
         }
       ]
     },
@@ -32145,6 +32182,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: SGDSN publications (newest 27 October) and its INESIA page, DGE press (newest 17 November), the digital ministry's press (newest 10 September) and the Prime Minister's speech of 19 November. The government's cyber plan of 19 November says INESIA's development will continue; it gives no new mandate, power or budget, so nothing is entered. The plan's primary page was not found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: SGDSN publications (newest 27 October) and its INESIA page, DGE press (newest 17 November), the economy ministry's press (24 November), the digital minister's press (20 November) and DINUM press (25 November). The primary page of the government's cyber plan of 19 November was found; it says INESIA's development will continue and gives no new mandate, power or budget, so nothing is entered. No new institute publication was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -32728,6 +32769,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: BSI's AISI page (newest 1 November), BSI news (17 November) and its annual IT security report of 19 November, which names the institute and confirms recorded values, and BMDS press (20 November). Added the Japan-Germany leaders' texts of 28 October 2026, which name the institute for cooperation with the Japan AI Safety Institute. The interior ministry's press could not be read on any route. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: BSI's AISI page (newest digest 1 November), BSI news (24 November) and BMDS press (20 November). The interior ministry's press listing was read only in part (newest 19 November), and BSI's press list could not be read. No new institute output, funding, staff or status fact was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -33138,6 +33183,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: the BOE daily summaries of 20, 21 and 23 November, AESIA news (newest 12 November) and the ministry's press on La Moncloa (newest 3 November). No constitutive act and no institute appointment found. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: AESIA news (newest 12 November) and studies, the ministry's press on La Moncloa (newest 3 November) and the BOE daily summaries of 24 and 25 November. No constitutive act and no institute appointment found; AESIA's study on bias in the Grok models is credited to AESIA, not the institute. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -33604,6 +33653,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: KI Norge news (newest dated item 1 September), Digdir news (18 November), the digitalisation ministry's releases (13 November) and the Storting's 2027 budget cases, which are still in committee (deadline 30 November). The 2027 figures stay proposed. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: KI Norge articles (newest dated item 24 September), Digdir news (18 November), the government's releases (25 November) and the Storting's 2027 budget cases, which are still in committee. The Storting's timetable dates the finance committee's recommendation on the overall budget 30 November and some sector committees' recommendations 8 December, with plenary votes to 15 December. The 2027 figures stay proposed. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -34059,6 +34112,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: the AI Office page (still more than 125 staff), Commission digital-strategy news (newest 20 November) and library (13 November), and the Official Journal's L series of 20 and 23 November. Added the draft fundamental rights impact assessment template of 16 November 2026, developed by the AI Office, as an output. The C series of 23 November was read only in part. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: the AI Office page (still more than 125 staff), the Commission's digital-strategy library (newest 25 November) and news (listing read to 20 November, with items of 23 to 25 November found by search), and the Official Journal's L and C series of 23 to 25 November. No new AI Act act and no new Office output were identified; three corrigenda in the L series of 23 November were not read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -34939,6 +34996,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: the institute page, its news tag (newest 16 October), research blog and guidelines page, NIST news (19 November) and Commerce news (16 November). No institute item dated in the window. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: the centre's home page, news tag (newest 16 October), research blog (23 March) and guidelines page (updated 30 September), NIST news (24 November) and Commerce press releases (16 November). Added the draft NIST SP 2400-801, Practices for Evaluating SI-Driven Uplift, released for comment on 24 November, as an output. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -35026,7 +35087,8 @@
         "us-si-page-archive-2026-09-30",
         "fix-output-us-entry-9",
         "fix-output-us-entry-4",
-        "us-commerce-2024-02"
+        "us-commerce-2024-02",
+        "us-uplift-practices-2026"
       ],
       "notes": "The current NIST pages use CAISSI. The name-history start is the earliest archived use of the name found, NIST's super intelligence page as captured on 30 September 2026. Executive Order 14434 of 29 September 2026, which directs the executive branch to use 'Super Intelligence' in place of 'Artificial Intelligence', is the likely trigger, but it does not name this centre or set a date for its rename. The current ministerial basis refers to the June 2025 CAISI decision; the retained establishment date refers to its US AISI predecessor. Canada's CAISI, the Canadian AI Safety Institute, is a different body.",
       "mandate_short": "Leads national security evaluations of superintelligence (SI) systems and develops guidelines to measure and improve their security.",
@@ -35536,6 +35598,27 @@
           },
           "functions": [
             "research"
+          ]
+        },
+        {
+          "date": "2026-11-24",
+          "type": "guidance",
+          "title": "Practices for Evaluating SI-Driven Uplift, initial public draft",
+          "source_ids": [
+            "us-uplift-practices-2026"
+          ],
+          "lineage": "practices-for-evaluating-si-driven-uplift-initial-public-draft",
+          "attribution": "institutional_author",
+          "attribution_note": "The official publication announcement says the practices in the draft reflect NIST CAISSI's own experience assessing SI-driven uplift with developers and federal agencies, and names NIST CAISSI as requesting public comment on it.",
+          "qualifies_as": "none",
+          "qualification_note": "Substantive guidance remains in the publication catalogue but does not itself report a qualifying evaluation, test result, benchmark or technical research result.",
+          "credit": {
+            "institute_id": "us-caissi",
+            "date": "2026-11-24"
+          },
+          "functions": [
+            "evaluation_methods",
+            "standards_guidance"
           ]
         }
       ],
@@ -36223,6 +36306,16 @@
           "source_ids": [
             "depth-us-gsa"
           ]
+        },
+        {
+          "id": "claims-a2064b2f3fab491590d47c80a731eccc",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "activity",
+          "text": "Requested public comment on a draft document, NIST SP 2400-801 Practices for Evaluating SI-Driven Uplift.",
+          "source_ids": [
+            "us-uplift-practices-2026"
+          ]
         }
       ]
     },
@@ -36449,6 +36542,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: the institute's ISED page, the CAISI Research Program site and newsroom (newest 6 November) and CIFAR news. No new institute item. ISED's media room and NRC news could not be read on any route. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: the institute page (newest blog 8 July), the research programme's newsroom (18 November), CIFAR news (12 November) and ISED's news through the Canada.ca news search (24 November). No new institute item was found. NRC's news could not be read as a current listing. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -37200,6 +37297,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: the institute's activity list (newest 20 November, a news digest of others' work) and outputs (6 October), IPA press (13 November) and the Cabinet Office AI pages (working group last met 18 November). Added the Japan-Germany leaders' texts of 28 October 2026, which name the institute for cooperation with AISI Deutschland. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: the institute's activity (newest 24 November) and outputs pages (6 October), IPA press (13 November) and the Cabinet Office AI pages, including the AI expert working group (newest meeting 18 November). The institute's AI news digest of 24 November summarises other bodies' work and is not entered. No further step on the working group's draft outline of 18 November was found in the sources read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -38619,6 +38720,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: the institute's Korean news board (newest 4 November) and English board, the science ministry's press list (no dates shown) and korea.kr policy news (23 November). No new institute fact. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: the institute's Korean board (newest 4 November) and English board (24 December 2024), MSIT's press and policy pages (25 November) and korea.kr policy news (25 November). No new institute item was found; the attachments of two MSIT releases were not read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -39353,6 +39458,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: the institute's home and resources pages (newest 23 July), MDDI news (22 November) and IMDA's press list (undated titles). The MDDI release of 22 November on the Singapore-China digital policy dialogue does not name the institute. No new institute fact. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: the institute's resources (newest 23 July), MDDI's newsroom (22 November) and IMDA's press list, whose titles carry no dates; the newest IMDA items that could be dated are of October. No new institute output was found. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -39962,6 +40071,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: the institute page, the department's news (23 November) and ministers' and PM&C media (newest institute items already recorded). The Senate estimates proof Hansard of 29 October 2026 was read again; its staff figures are already recorded. The department's publications listing could not be read. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: the institute page, the department's news (newest 24 November) and publications (25 November), the ministers' media pages (25 November) and the Joint Select Committee on AI's answers (latest received 19 November). No new institute output or fact was found. Answers to Senate estimates questions, due 17 December, could not be read in the database. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -40679,6 +40792,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: the MY-AISafe page (unchanged), AI Malaysia news and the Ministry of Digital's pages (stale copies only) and the digital Hansard of 28 October. The Supply Bill 2027 is at committee stage, with no institute line found. AI Malaysia's appointment of a chief executive, known only from press, is not entered. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: AI Malaysia's institute page and news (newest 11 September), the Ministry of Digital's releases (25 November, titles only) and the Dewan Rakyat Hansard of 23 and 24 November. Added the Digital Minister's answer of 24 November, which says the government is developing the institute and that it will focus on, among other things, developing evaluation methods. No institute line was found in the ministry's 2027 budget schedule read, and passage of the Supply Bill 2027 was not established. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -40717,9 +40834,10 @@
         "my-csm-about",
         "my-csm-events",
         "my-hansard-dr-2026-10-05",
-        "my-aisafe-overview"
+        "my-aisafe-overview",
+        "my-hansard-dr-2026-11-24"
       ],
-      "notes": "AI Malaysia Berhad was itself created the same day from the National AI Office. The 2026-2030 National AI Action Plan does not mention the institute; it calls instead for a national 'AI Trust Function' to evaluate, monitor and respond to AI risks. In September 2026 AI Malaysia's chair still described setting up the institute as a priority in the works. This is the weakest 'established' record in the dataset: designation and mandate are stated in a primary government release, but no head, staff, budget or launch is published.\n\nThe ministry identifies AI Malaysia Berhad as a national AI entity under the Ministry of Digital and assigns it the national AI Safety Institute role. The institute's separate legal form and host classification are not specified in this announcement.",
+      "notes": "AI Malaysia Berhad was itself created the same day from the National AI Office. The 2026-2030 National AI Action Plan does not mention the institute; it calls instead for a national 'AI Trust Function' to evaluate, monitor and respond to AI risks. In September 2026 AI Malaysia's chair still described setting up the institute as a priority in the works. On 24 November 2026 the Minister of Digital told the Dewan Rakyat that the government is developing the institute under AI Malaysia. This is the weakest 'established' record in the dataset: designation and mandate are stated in a primary government release, but no head, staff, budget or launch is published.\n\nThe ministry identifies AI Malaysia Berhad as a national AI entity under the Ministry of Digital and assigns it the national AI Safety Institute role. The institute's separate legal form and host classification are not specified in this announcement.",
       "website": "https://ai.gov.my/my-aisafe/",
       "mandate_short": "Evaluates, tests and red-teams AI systems; supports standards and regulation.",
       "legal_basis": {
@@ -40917,6 +41035,16 @@
           "source_ids": [
             "my-digital-2026-07"
           ]
+        },
+        {
+          "id": "claims-c34782f2ad204c7bb807217b511c32a0",
+          "kind": "function",
+          "code": "evaluation_methods",
+          "basis": "mandate",
+          "text": "The Minister of Digital, Gobind Singh Deo, told the Dewan Rakyat that it will focus on developing evaluation methods, alongside research, testing and assessment of AI safety risks.",
+          "source_ids": [
+            "my-hansard-dr-2026-11-24"
+          ]
         }
       ]
     },
@@ -41026,6 +41154,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: MeitY's home page announcements and the PIB release list (to 22 November, MeitY section not reached). IndiaAI's pages could not be read on any route. No release of the consultation paper on AI regulation was found in the sources read. No new institute fact. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: MeitY's announcements and its acts and policies page (newest 29 October) and PIB's MeitY releases (newest 21 November). IndiaAI's news and MeitY's consultations page could not be read. No release of the consultation paper on AI regulation was found in the sources read. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -41363,6 +41495,10 @@
           {
             "date": "2026-11-23",
             "scope": "Post-release news re-check from 20 November 2026: the ICT ministry's home page (newest 3 November) and the presidency's Cabinet briefs (newest 30 June). No adoption of the draft AI policy and no act on the institute found; current Cabinet despatches were not reached, so adoption is unverified rather than disproved. The High Court judgment of 12 November was not read. Partial check, not a full record re-check."
+          },
+          {
+            "date": "2026-11-25",
+            "scope": "Post-release news re-check from 23 November 2026: the ICT ministry's news (newest 24 November) and policy documents, the presidency's Cabinet briefs (newest 30 June) and the Senate's programme for the week of 24 November. No adoption of the draft AI policy was found in the sources read. The High Court's judgment of 12 November on the AI policy petition was read; it neither establishes the institute nor adopts the policy, and nothing is entered from it. Partial check, not a full record re-check."
           }
         ],
         "last_checked_basis": "historical_upper_bound",
@@ -123088,13 +123224,14 @@
     {
       "id": "my-hansard-dr-2026-10-05",
       "url": "https://hansard.parlimen.gov.my/hansard/dewan-rakyat/2026-10-05",
-      "title": "Dewan Rakyat Hansard, 5 October 2026",
+      "title": "Dewan Rakyat Hansard, 5 October 2026 (draft Hansard)",
       "publisher": "Parliament of Malaysia, Dewan Rakyat",
       "type": "primary",
       "published": "2026-10-05",
       "accessed": "2026-11-10",
       "language": "ms",
       "origin": "MY",
+      "access_note": "The Hansard page marks each speech as draft.",
       "excerpts": [
         {
           "text": "Malaysia AI Safety Institute bertanggungjawab untuk melihat secara spesifik kepada aspek tadbir urus AI ataupun AI governance yang merangkumi aspek penandaarasan keselamatan, penilaian risiko dan pelaporan insiden untuk tindakan pembetulan",
@@ -129800,6 +129937,311 @@
         "retrieved": "2026-11-25T15:27:28Z",
         "sha256": "b9f588c8e9badae379c1bee0b05f8dd9421a38734895825e6d782124a3407c64",
         "text_sha256": "de4dd835e2f9f1566f53f677ab753f7747465f2de4c4bdd4bfe3fedf55c25ce0",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-attack-policy-2026",
+      "url": "https://www.aisi.gov.uk/research/attack-policy-selection-can-mislead-monitor-evaluators",
+      "title": "Attack Policy Selection can Mislead Monitor Evaluators",
+      "publisher": "AI Security Institute",
+      "type": "primary",
+      "published": "2026-11-22",
+      "accessed": "2026-11-25",
+      "language": "en",
+      "origin": "GB",
+      "output_role": "document",
+      "output_lineage": "attack-policy-selection-can-mislead-monitor-evaluators",
+      "excerpts": [
+        {
+          "text": "Attack Policy Selection can Mislead Monitor Evaluators Nov 22, 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "attack-policy-selection-can-mislead-monitor-evaluators"
+              },
+              "title"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "attack-policy-selection-can-mislead-monitor-evaluators"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "attack-policy-selection-can-mislead-monitor-evaluators"
+              },
+              "credit",
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-25"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-25T15:50:56Z",
+        "sha256": "3d1586adb0724a6f169882420ca008bfba9fe559569958d3eaf205ff230c5e39",
+        "text_sha256": "3af4e48244159c798b30d443c48fe41c33c7bd999bf951d6e2d1ca614928c7a4",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "gb-attack-policy-blog-2026",
+      "url": "https://www.aisi.gov.uk/blog/attack-policy-selection-can-make-monitor-evaluations-misleading",
+      "title": "Attack policy selection can make monitor evaluations misleading",
+      "publisher": "AI Security Institute",
+      "type": "primary",
+      "published": "2026-11-23",
+      "accessed": "2026-11-25",
+      "language": "en",
+      "origin": "GB",
+      "output_role": "document",
+      "output_lineage": "attack-policy-selection-can-mislead-monitor-evaluators",
+      "excerpts": [
+        {
+          "text": "In our new paper, AISI’s Red Team tested whether the way these synthetic attacks are generated affects the results of monitor evaluations. We found that the same monitor missed 0.2% to 23% of successful attacks depending on the “attack policy” used to generate them,",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "attack-policy-selection-can-mislead-monitor-evaluators"
+              },
+              "credit",
+              "institute_id"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "outputs",
+              {
+                "lineage": "attack-policy-selection-can-mislead-monitor-evaluators"
+              },
+              "attribution_note"
+            ],
+            [
+              "institutes",
+              {
+                "id": "gb-aisi"
+              },
+              "claims",
+              {
+                "id": "claims-58fa4048634e4f0ea30cee90e66f4b9b"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-25"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-25T15:50:57Z",
+        "sha256": "dfa49361bab848828c0674e638e8c4076b5ce456f5a47efd4ceb87fc37b1d5c0",
+        "text_sha256": "913ea101d903a53319c36d80fb1d11324347ebb770a860e763891adbf401cefd",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "us-uplift-practices-2026",
+      "url": "https://www.nist.gov/news-events/news/2026/11/towards-best-practices-evaluating-si-driven-uplift",
+      "title": "Towards Best Practices for Evaluating SI-Driven Uplift",
+      "publisher": "NIST",
+      "type": "primary",
+      "published": "2026-11-24",
+      "accessed": "2026-11-25",
+      "language": "en",
+      "origin": "US",
+      "output_role": "document",
+      "output_lineage": "practices-for-evaluating-si-driven-uplift-initial-public-draft",
+      "excerpts": [
+        {
+          "text": "November 24, 2026",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "practices-for-evaluating-si-driven-uplift-initial-public-draft"
+              },
+              "date"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "practices-for-evaluating-si-driven-uplift-initial-public-draft"
+              },
+              "credit",
+              "date"
+            ]
+          ],
+          "accessed": "2026-11-25"
+        },
+        {
+          "text": "NIST CAISSI is requesting public comment on a draft document, NIST SP 2400-801 Practices for Evaluating SI-Driven Uplift",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "practices-for-evaluating-si-driven-uplift-initial-public-draft"
+              },
+              "title"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "claims",
+              {
+                "id": "claims-a2064b2f3fab491590d47c80a731eccc"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-25"
+        },
+        {
+          "text": "The practices in this initial public draft reflect NIST CAISSI’s experience partnering with leading U.S. developers and Federal agencies to assess SI-driven uplift",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "practices-for-evaluating-si-driven-uplift-initial-public-draft"
+              },
+              "attribution_note"
+            ],
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "practices-for-evaluating-si-driven-uplift-initial-public-draft"
+              },
+              "credit",
+              "institute_id"
+            ]
+          ],
+          "accessed": "2026-11-25"
+        },
+        {
+          "text": "The primary audience for NIST SP 2400-801 is anyone conducting evaluations of SI systems, including SI users, deployers, implementers, and performance evaluators.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "us-caissi"
+              },
+              "outputs",
+              {
+                "lineage": "practices-for-evaluating-si-driven-uplift-initial-public-draft"
+              },
+              "type"
+            ]
+          ],
+          "accessed": "2026-11-25"
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-25T15:50:56Z",
+        "sha256": "d3f2a5abce9f325bccf2a42ae75abb975051c3bdd698f5c772f67e144da86903",
+        "text_sha256": "83afdbc57b27ef80aa4e3089bf4191fa96e386b50dd6fb474a0c3c4794a95a1e",
+        "text_scheme": 1
+      }
+    },
+    {
+      "id": "my-hansard-dr-2026-11-24",
+      "url": "https://hansard.parlimen.gov.my/hansard/dewan-rakyat/2026-11-24",
+      "title": "Dewan Rakyat Hansard, 24 November 2026 (draft Hansard)",
+      "publisher": "Parliament of Malaysia, Dewan Rakyat",
+      "type": "primary",
+      "published": "2026-11-24",
+      "accessed": "2026-11-25",
+      "language": "ms",
+      "origin": "MY",
+      "access_note": "The Hansard page marks each speech as draft.",
+      "excerpts": [
+        {
+          "text": "kerajaan juga sedang membangunkan Institut Keselamatan AI Malaysia atau Malaysia AI Safety Institute di bawah AI Malaysia dan ini bagi memperkukuhkan keupayaan negara dalam aspek-aspek keselamatan AI.",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "notes"
+            ]
+          ],
+          "accessed": "2026-11-25",
+          "gloss": "the government is also developing the Malaysia AI Safety Institute under AI Malaysia, to strengthen the country's capability in AI safety."
+        },
+        {
+          "text": "Institut ini Tuan Yang di-Pertua, akan memberikan tumpuan yang khusus kepada penyelidikan, pengujian dan juga penilaian risiko keselamatan teknologi AI dan juga serta pembangunan kaedah- kaedah penilaian dan piawaian keselamatan",
+          "supports": [
+            [
+              "institutes",
+              {
+                "id": "my-aisafe"
+              },
+              "claims",
+              {
+                "id": "claims-c34782f2ad204c7bb807217b511c32a0"
+              },
+              "text"
+            ]
+          ],
+          "accessed": "2026-11-25",
+          "gloss": "This institute, Mr Speaker, will focus specifically on research, testing and assessment of the safety risks of AI technology, and on developing evaluation methods and safety standards",
+          "anchors": [
+            {
+              "text": "Institut Keselamatan AI Malaysia atau Malaysia AI Safety Institute di bawah AI Malaysia",
+              "kind": "definition",
+              "gloss": "the Malaysia AI Safety Institute under AI Malaysia"
+            }
+          ]
+        }
+      ],
+      "snapshot": {
+        "retrieved": "2026-11-25T15:50:56Z",
+        "sha256": "81765efbc8374c368ab66448488bc96cb6dacaf0d37cd43b5a3727fa8e869a4f",
+        "text_sha256": "1aad8aef0a93c3f8c5444e77d5453d56ed53f24b840d421acc1724f9d19a13cb",
         "text_scheme": 1
       }
     }
