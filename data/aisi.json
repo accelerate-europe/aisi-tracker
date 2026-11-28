@@ -395,14 +395,14 @@
         "model_testing": {
           "label": "Model testing",
           "short": "model testing",
-          "definition": "It ran or commissioned tests (evaluations) of AI models that a text reports in enough detail to show real tests (how many, of what kind of model or test, or by what method), or a text assigns it testing AI models or systems.",
+          "definition": "It ran or commissioned tests (evaluations) of AI models that a text reports in enough detail to show real tests (how many, of what kind of model or test, or by what method), or a text assigns it testing AI models or systems; tests confined to one application or field (a clinical chatbot comparison, a speech-recognition benchmark) count only when they test AI risks or safety, a text that names no application or field meets this, and a language is not a field.",
           "summary": "Tests AI models or systems itself, or commissions such tests.",
           "group": "Testing and science"
         },
         "evaluation_methods": {
           "label": "Evaluation methods and tools",
           "short": "evaluation methods",
-          "definition": "It develops or publishes test methods, benchmarks, protocols or software; running existing benchmarks is model testing.",
+          "definition": "It develops or publishes test methods, benchmarks, protocols or software (work confined to one application or field, such as a medical benchmark, counts only when it tests AI risks or safety; a text that names no application or field meets this, and a language is not a field); running existing benchmarks is model testing.",
           "summary": "Develops or publishes test methods, benchmarks or testing software.",
           "group": "Testing and science"
         },
@@ -4764,7 +4764,7 @@
           "id": "claims-000fc7c8186f42259182d4fae500cb56",
           "kind": "function",
           "code": "regulatory_support",
-          "basis": "activity",
+          "basis": "mandate",
           "body_id": "related_bodies-18d1df10e92a59df8106f78e76a7b25e",
           "text": "The data protection authority's FAQ says that, in preparation for implementing the AI Act, an AI service desk set up in RTR serves as a contact point and information hub on AI.",
           "source_ids": [
@@ -6848,7 +6848,7 @@
           "id": "claims-916d8158fe6a4389a0d507e65b5356cd",
           "kind": "function",
           "code": "convening",
-          "basis": "activity",
+          "basis": "mandate",
           "body_id": "related_bodies-ba64e53e232552089a798a95c7ba687f",
           "text": "The government says it operates as the central national hub for AI experts, technologies, services and information.",
           "source_ids": [
@@ -7210,17 +7210,6 @@
           "body_id": "related_bodies-79e93e398efc50d3aa6d1d88ae3e6308",
           "lead": true,
           "text": "The ministry's project plan says research organisations develop new knowledge, models and methods, while \"AI CyberLab will ensure their verification, testing and implementation support\" when they are introduced into public administration information systems, from a cybersecurity perspective.",
-          "source_ids": [
-            "sk-ai-cyberlab-zamer"
-          ]
-        },
-        {
-          "id": "claims-e797cbc878284b7db79d4ef2e4cc6f01",
-          "kind": "function",
-          "code": "capacity_building",
-          "basis": "mandate",
-          "body_id": "related_bodies-79e93e398efc50d3aa6d1d88ae3e6308",
-          "text": "The ministry's project plan says the laboratory will enable public authorities to test the security and robustness of AI solutions before they are deployed.",
           "source_ids": [
             "sk-ai-cyberlab-zamer"
           ]
@@ -9901,7 +9890,7 @@
           "id": "claims-a8350d8c00694e07854dd48af9c2396c",
           "kind": "function",
           "code": "research",
-          "basis": "activity",
+          "basis": "mandate",
           "body_id": "related_bodies-1bd7b9d42ab55f11b3c6c1b1e532ba59",
           "lead": true,
           "text": "CnAISDA says it conducts and supports research on \"all aspects of AI safety, from theoretical foundations to testing methods, audits, governance and social impacts\".",
@@ -14190,7 +14179,7 @@
           "id": "claims-85e472076129414f91fee5d2bf2151ba",
           "kind": "function",
           "code": "evaluation_methods",
-          "basis": "activity",
+          "basis": "mandate",
           "body_id": "related_bodies-a49acea8ed815892870f572bf579dca7",
           "lead": true,
           "text": "It says it creates \"tools for safe model control and evaluation\" to make advanced AI systems more transparent, reliable and aligned with human intentions.",
@@ -14199,21 +14188,10 @@
           ]
         },
         {
-          "id": "claims-6f1f18372ea2476db7d3b02347797234",
-          "kind": "function",
-          "code": "policy_advice",
-          "basis": "activity",
-          "body_id": "related_bodies-a49acea8ed815892870f572bf579dca7",
-          "text": "It says its policy research explores how governance frameworks, regulatory approaches and international cooperation can ensure the safe and beneficial deployment of advanced AI systems.",
-          "source_ids": [
-            "kz-kaisi"
-          ]
-        },
-        {
           "id": "claims-3e4c1322d98143d8bef676bcb94530be",
           "kind": "function",
           "code": "research",
-          "basis": "activity",
+          "basis": "mandate",
           "body_id": "related_bodies-a49acea8ed815892870f572bf579dca7",
           "text": "It says it investigates how neural representations emerge and interact, applying techniques such as \"activation steering, adversarial robustness analysis, and mechanistic interpretability\".",
           "source_ids": [
@@ -53361,23 +53339,6 @@
           "accessed": "2026-10-17"
         },
         {
-          "text": "Our policy research explores how governance frameworks, regulatory approaches, and international cooperation can ensure the safe and beneficial deployment of advanced AI systems.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "KZ"
-              },
-              "claims",
-              {
-                "id": "claims-6f1f18372ea2476db7d3b02347797234"
-              },
-              "text"
-            ]
-          ],
-          "accessed": "2026-10-17"
-        },
-        {
           "text": "We investigate how neural representations emerge and interact by applying techniques such as activation steering, adversarial robustness analysis, and mechanistic interpretability.",
           "supports": [
             [
@@ -58046,31 +58007,6 @@
             ]
           ],
           "gloss": "Research organisations develop new knowledge, models and methods, while AI CyberLab will ensure their verification, testing and implementation support when they are introduced into public administration information systems, from a cybersecurity perspective.",
-          "accessed": "2026-10-17"
-        },
-        {
-          "text": "Laboratórium zároveň umožní orgánom verejnej moci testovať bezpečnosť a robustnosť AI riešení pred \nich nasadením, čím vytvára prirodzené pokračovanie výskumno vývojového cyklu smerom k reálnej \nprevádzke vo verejnej správe.",
-          "supports": [
-            [
-              "jurisdictions",
-              {
-                "id": "SK"
-              },
-              "claims",
-              {
-                "id": "claims-e797cbc878284b7db79d4ef2e4cc6f01"
-              },
-              "text"
-            ]
-          ],
-          "gloss": "The laboratory will also enable public authorities to test the security and robustness of AI solutions before deployment, creating a natural continuation of the R&D cycle towards real operation in public administration.",
-          "anchors": [
-            {
-              "text": "Názov národného projektu  (ďalej aj „ NP“): Národné laboratórium umelej inteligencie pre \nkybernetickú bezpečnosť (AI CyberLab)",
-              "kind": "definition",
-              "gloss": "Name of the national project (hereinafter also 'NP'): National Artificial Intelligence Laboratory for Cybersecurity (AI CyberLab)"
-            }
-          ],
           "accessed": "2026-10-17"
         }
       ],
