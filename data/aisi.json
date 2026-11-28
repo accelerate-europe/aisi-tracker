@@ -395,14 +395,14 @@
         "model_testing": {
           "label": "Model testing",
           "short": "model testing",
-          "definition": "It ran or commissioned tests (evaluations) of AI models that a text reports in enough detail to show real tests (how many, of what kind of model or test, or by what method), or a text assigns it testing AI models or systems; tests for one application or field (a clinical chatbot comparison, a speech-recognition benchmark) count only when they test AI risks or safety, judged by the work reported, not by the quote alone; a text that assigns testing without naming an application or field meets this, and a language is not a field.",
+          "definition": "It ran or commissioned tests (evaluations) of AI models that a text reports in enough detail to show real tests (how many, of what kind of model or test, or by what method), or a text assigns it testing AI models or systems. Tests for one application or field count only when they test AI risks or safety.",
           "summary": "Tests AI models or systems itself, or commissions such tests.",
           "group": "Testing and science"
         },
         "evaluation_methods": {
           "label": "Evaluation methods and tools",
           "short": "evaluation methods",
-          "definition": "It develops or publishes test methods, benchmarks, protocols or software (work for one application or field, such as a medical benchmark, counts only when it tests AI risks or safety, judged by the work reported, not by the quote alone; a text that assigns such work without naming an application or field meets this, and a language is not a field); running existing benchmarks is model testing.",
+          "definition": "It develops or publishes test methods, benchmarks, protocols or software; running existing benchmarks is model testing. Work for one application or field counts only when it tests AI risks or safety.",
           "summary": "Develops or publishes test methods, benchmarks or testing software.",
           "group": "Testing and science"
         },
